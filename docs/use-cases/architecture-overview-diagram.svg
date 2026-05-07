@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1100" viewBox="0 0 1800 1100" role="img" aria-labelledby="title desc">
+  <title id="title">SceneSense System Architecture</title>
+  <desc id="desc">A screenshot-friendly architecture diagram showing input, ingest, generation pipelines, validation, finalization, eval, and client outputs.</desc>
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="58%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#000000" flood-opacity="0.28"/>
+    </filter>
+
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/>
+    </marker>
+
+    <style>
+      .title { font: 800 54px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #f8fafc; letter-spacing: -1.2px; }
+      .subtitle { font: 500 24px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #cbd5e1; }
+      .stage-label { font: 800 19px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #e2e8f0; letter-spacing: .9px; text-transform: uppercase; }
+      .box-title { font: 800 25px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #f8fafc; }
+      .box-title-dark { font: 800 25px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #0f172a; }
+      .box-subtitle { font: 700 17px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #bfdbfe; }
+      .box-subtitle-dark { font: 700 17px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #334155; }
+      .body { font: 500 18px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #dbeafe; }
+      .body-muted { font: 500 18px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #cbd5e1; }
+      .body-dark { font: 600 18px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #1e293b; }
+      .small { font: 600 15px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #94a3b8; }
+      .arrow { stroke: #94a3b8; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+      .thin-arrow { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1800" height="1100" fill="url(#bg)"/>
+
+  <circle cx="1510" cy="120" r="280" fill="#1d4ed8" opacity="0.08"/>
+  <circle cx="240" cy="980" r="330" fill="#7c3aed" opacity="0.09"/>
+
+  <text x="90" y="96" class="title">SceneSense System Architecture</text>
+  <text x="92" y="136" class="subtitle">VLM JSON in, five grounded generation pipelines, validated client-ready cards out.</text>
+
+  <rect x="78" y="178" width="1644" height="828" rx="34" fill="#0f172a" opacity="0.74" stroke="#334155" stroke-width="2"/>
+
+  <!-- Top lane -->
+  <text x="120" y="230" class="stage-label">1. Input</text>
+  <rect x="120" y="250" width="320" height="162" rx="26" fill="#111827" stroke="#475569" stroke-width="3" filter="url(#shadow)"/>
+  <text x="150" y="298" class="box-title">Tubi Moments VLM</text>
+  <text x="150" y="332" class="body-muted">Scenes, cast, dialogue</text>
+  <text x="150" y="360" class="body-muted">themes, objects, wiki trivia</text>
+  <text x="150" y="388" class="body-muted">and recognized songs</text>
+
+  <path class="arrow" d="M 440 331 C 486 331, 500 331, 542 331"/>
+
+  <text x="570" y="230" class="stage-label">2. Ingest + domain detection</text>
+  <rect x="570" y="250" width="420" height="162" rx="26" fill="#1e293b" stroke="#64748b" stroke-width="3" filter="url(#shadow)"/>
+  <text x="600" y="298" class="box-title">Prepare Eligible Scenes</text>
+  <text x="600" y="332" class="body-muted">Load scenes and classify domain</text>
+  <text x="600" y="360" class="body-muted">legal, historical, medical, etc.</text>
+  <text x="600" y="388" class="body-muted">Skip flagged or very short scenes</text>
+
+  <path class="arrow" d="M 990 331 C 1032 331, 1050 331, 1092 331"/>
+
+  <text x="1120" y="230" class="stage-label">3. Generate in parallel</text>
+  <rect x="1120" y="250" width="560" height="162" rx="26" fill="#082f49" stroke="#38bdf8" stroke-width="3" filter="url(#shadow)"/>
+  <text x="1150" y="298" class="box-title">Five Specialized Pipelines</text>
+  <text x="1150" y="332" class="body-muted">Each pipeline creates a different card source</text>
+  <text x="1150" y="360" class="body-muted">with grounding, citations, and retry behavior</text>
+  <text x="1150" y="388" class="body-muted">before cards reach final scoring</text>
+
+  <path class="arrow" d="M 1400 412 C 1400 448, 1400 448, 1400 484"/>
+
+  <!-- Pipeline cards -->
+  <rect x="120" y="500" width="300" height="190" rx="24" fill="#10b981" stroke="#34d399" stroke-width="3" filter="url(#shadow)"/>
+  <text x="150" y="548" class="box-title-dark">Tier-0</text>
+  <text x="150" y="579" class="box-subtitle-dark">deterministic, 0 API calls</text>
+  <text x="150" y="620" class="body-dark">Wiki trivia</text>
+  <text x="150" y="650" class="body-dark">Song IDs</text>
+  <text x="150" y="680" class="body-dark">Celebrity placeholders</text>
+
+  <rect x="450" y="500" width="300" height="190" rx="24" fill="#14b8a6" stroke="#5eead4" stroke-width="3" filter="url(#shadow)"/>
+  <text x="480" y="548" class="box-title-dark">Cast Enrichment</text>
+  <text x="480" y="579" class="box-subtitle-dark">Gemini + Google Search</text>
+  <text x="480" y="620" class="body-dark">Collect unique actors</text>
+  <text x="480" y="650" class="body-dark">Ground real actor facts</text>
+  <text x="480" y="680" class="body-dark">Require citations</text>
+
+  <rect x="780" y="500" width="300" height="190" rx="24" fill="#3b82f6" stroke="#93c5fd" stroke-width="3" filter="url(#shadow)"/>
+  <text x="810" y="548" class="box-title">Trivia</text>
+  <text x="810" y="579" class="box-subtitle">Gemini + web</text>
+  <text x="810" y="620" class="body">Topic proposer</text>
+  <text x="810" y="650" class="body">Scene-anchored MCQs</text>
+  <text x="810" y="680" class="body">Retry on overlap</text>
+
+  <rect x="1110" y="500" width="300" height="190" rx="24" fill="#f59e0b" stroke="#fbbf24" stroke-width="3" filter="url(#shadow)"/>
+  <text x="1140" y="548" class="box-title-dark">How Real Is It?</text>
+  <text x="1140" y="579" class="box-subtitle-dark">Gemini + web + Tier-S</text>
+  <text x="1140" y="620" class="body-dark">Myth discovery</text>
+  <text x="1140" y="650" class="body-dark">Primary sources</text>
+  <text x="1140" y="680" class="body-dark">Verbatim anchors</text>
+
+  <rect x="1440" y="500" width="300" height="190" rx="24" fill="#8b5cf6" stroke="#c4b5fd" stroke-width="3" filter="url(#shadow)"/>
+  <text x="1470" y="548" class="box-title">Facts</text>
+  <text x="1470" y="579" class="box-subtitle">editorial BTS</text>
+  <text x="1470" y="620" class="body">Topic clusters</text>
+  <text x="1470" y="650" class="body">Tier A/B sources</text>
+  <text x="1470" y="680" class="body">Drawer follow-ups</text>
+
+  <path class="thin-arrow" d="M 270 690 C 270 742, 900 728, 900 772"/>
+  <path class="thin-arrow" d="M 600 690 C 600 736, 900 736, 900 772"/>
+  <path class="thin-arrow" d="M 930 690 C 930 725, 930 738, 930 772"/>
+  <path class="thin-arrow" d="M 1260 690 C 1260 736, 960 736, 960 772"/>
+  <path class="thin-arrow" d="M 1590 690 C 1590 742, 960 728, 960 772"/>
+
+  <!-- Bottom lane -->
+  <text x="120" y="780" class="stage-label">4. Validate</text>
+  <rect x="120" y="802" width="430" height="150" rx="26" fill="#7f1d1d" stroke="#fca5a5" stroke-width="3" filter="url(#shadow)"/>
+  <text x="150" y="850" class="box-title">Per-Pipeline Validators</text>
+  <text x="150" y="884" class="body-muted">URL provenance, quote match, source quality,</text>
+  <text x="150" y="912" class="body-muted">cross-source corroboration, expert gates,</text>
+  <text x="150" y="940" class="body-muted">MCQ option checks, retry loop</text>
+
+  <path class="arrow" d="M 550 877 C 590 877, 610 877, 650 877"/>
+
+  <text x="680" y="780" class="stage-label">5. Finalize</text>
+  <rect x="680" y="802" width="430" height="150" rx="26" fill="#713f12" stroke="#fcd34d" stroke-width="3" filter="url(#shadow)"/>
+  <text x="710" y="850" class="box-title">Dedup + Score + Verdict</text>
+  <text x="710" y="884" class="body-muted">Dedup by scene, primitive, keyword hash</text>
+  <text x="710" y="912" class="body-muted">7-dim scorecard: accuracy, legal safety,</text>
+  <text x="710" y="940" class="body-muted">prompt quality, UX, monetization fit</text>
+
+  <path class="arrow" d="M 1110 877 C 1150 877, 1170 877, 1210 877"/>
+
+  <text x="1240" y="780" class="stage-label">6. Client output</text>
+  <rect x="1240" y="802" width="440" height="150" rx="26" fill="#4c1d95" stroke="#c4b5fd" stroke-width="3" filter="url(#shadow)"/>
+  <text x="1270" y="850" class="box-title">Client-Ready Bundle</text>
+  <text x="1270" y="884" class="body-muted">ui.json, cards.md, final.json, review.json</text>
+  <text x="1270" y="912" class="body-muted">Card shapes: actorFact, sceneFact,</text>
+  <text x="1270" y="940" class="body-muted">actorTrivia, sceneTrivia</text>
+
+  <path class="arrow" d="M 900 772 C 900 748, 335 748, 335 802"/>
+
+  <text x="120" y="1032" class="small">Optional deterministic eval: re-fetch cited URLs and re-match quotes verbatim before final approval.</text>
+</svg>
