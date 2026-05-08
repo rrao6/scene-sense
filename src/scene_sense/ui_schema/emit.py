@@ -259,10 +259,23 @@ def build_scene_fact(p: dict[str, Any]) -> dict[str, Any]:
     return card
 
 
+def _followups_as_strings(p: dict[str, Any]) -> list[str]:
+    out = []
+    for f in (p.get("follow_ups") or []):
+        if isinstance(f, dict):
+            h = (f.get("headline") or "").strip()
+            if h:
+                out.append(h)
+        elif isinstance(f, str):
+            if f.strip():
+                out.append(f.strip())
+    return out
+
+
 def build_actor_trivia(p: dict[str, Any], scene_context: dict | None = None) -> dict[str, Any]:
     actor_name = _actor_name_from_trivia(p) or ""
     character = _character_from_scene(p, scene_context)
-    return {
+    card = {
         "type": "actorTrivia",
         "sceneCuepoint": _scene_cuepoint(p),
         "actorImage": None,
@@ -272,16 +285,24 @@ def build_actor_trivia(p: dict[str, Any], scene_context: dict | None = None) -> 
         "triviaOptions": _options_to_ui(p.get("options")),
         "answerText": _answer_text(p),
     }
+    fups = _followups_as_strings(p)
+    if fups:
+        card["followUps"] = fups
+    return card
 
 
 def build_scene_trivia(p: dict[str, Any]) -> dict[str, Any]:
-    return {
+    card = {
         "type": "sceneTrivia",
         "sceneCuepoint": _scene_cuepoint(p),
         "triviaText": (p.get("body") or "").strip(),
         "triviaOptions": _options_to_ui(p.get("options")),
         "answerText": _answer_text(p),
     }
+    fups = _followups_as_strings(p)
+    if fups:
+        card["followUps"] = fups
+    return card
 
 
 # -------------------- router --------------------

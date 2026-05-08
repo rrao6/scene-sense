@@ -1,0 +1,158 @@
+{
+  "title": "Legally Blonde",
+  "reviewer": "Lia Yu",
+  "reviewed_at": "2026-05-07",
+  "notes": "Bottom-to-top review order in source. Each entry maps to a trivia card in data/outputs/legally_blonde.trivia.json. Verdicts: approve | approve_with_edit | reject. 'Reasons' extracted verbatim from Lia's comments.",
+  "verdicts": [
+    {
+      "scene": 2,
+      "headline": "Bruiser's real breed?",
+      "verdict": "reject",
+      "reasons": ["too_obvious_visible_on_screen"],
+      "lia_quote": "Reject: Too obvious",
+      "taxonomy": ["viewer_can_see_answer"]
+    },
+    {
+      "scene": 2,
+      "headline": "Bruiser's Real Name?",
+      "verdict": "approve",
+      "reasons": ["emotional_payoff", "clear_followup"],
+      "lia_quote": "Approve: interesting, clear follow up prompt - 'What was Reese Witherspoon's tribute post to Moonie?'",
+      "example_followup": "What was Reese Witherspoon's tribute post to Moonie?",
+      "followup_payload_example": "With a sad heart, I have to let all the #LegallyBlonde fans know that Bruiser Woods (also known as Moonie) passed away yesterday... [Reese Witherspoon, Instagram]",
+      "taxonomy": ["follow_up_drives_value", "cultural_anchor_famous_person"]
+    },
+    {
+      "scene": 2,
+      "headline": "Who plays Warner Huntington III?",
+      "verdict": "reject",
+      "reasons": ["bad_multiple_choice_options", "too_obscure"],
+      "lia_quote": "reject: bad multiple choice options, too obscure",
+      "taxonomy": ["broken_mcq", "obscure_subject"]
+    },
+    {
+      "scene": 3,
+      "headline": "Is Delta Nu a Real Sorority?",
+      "verdict": "reject",
+      "reasons": ["too_obscure"],
+      "lia_quote": "Reject: Too obscure for a trivia question",
+      "taxonomy": ["low_interest_fact"]
+    },
+    {
+      "scene": 3,
+      "headline": "Serena's voice acting secret?",
+      "verdict": "approve_with_edit",
+      "reasons": ["interesting_hook", "mcq_options_need_cleanup"],
+      "lia_quote": "Approve: interesting hook, but wording of the multiple choice needs clean up to be believable options",
+      "taxonomy": ["fixable_options"]
+    },
+    {
+      "scene": 3,
+      "headline": "Margot's Scream Queen Past?",
+      "verdict": "reject",
+      "reasons": ["niche_audience_would_be_good_with_personalization"],
+      "lia_quote": "This would be a great option if we were able to at some point personalize trivia questions e.g. if I were a power horror viewer, I'd get this question. As it stands for gen pop audience, it's too obscure",
+      "taxonomy": ["audience_niche", "gated_on_personalization"]
+    },
+    {
+      "scene": 4,
+      "headline": "Elle's Fabric Fact Check",
+      "verdict": "reject",
+      "reasons": ["answer_in_scene_dialogue"],
+      "lia_quote": "Reject: asking a trivia question about something that was just said in the scene is not a relevant trivia topic.",
+      "taxonomy": ["answer_stated_in_scene"]
+    },
+    {
+      "scene": 4,
+      "headline": "Who played the rude saleswoman?",
+      "verdict": "reject",
+      "reasons": ["too_obscure"],
+      "lia_quote": "Reject: too obscure",
+      "taxonomy": ["obscure_subject"]
+    },
+    {
+      "scene": 4,
+      "headline": "Elle's Fabric Expertise Saves the Day?",
+      "verdict": "reject",
+      "reasons": ["answer_in_scene_dialogue"],
+      "lia_quote": "Reject: asking a trivia question about something that was just said in the scene is not a relevant trivia topic.",
+      "taxonomy": ["answer_stated_in_scene"]
+    },
+    {
+      "scene": 5,
+      "headline": "Who designed Elle's iconic pink dress?",
+      "verdict": "reject",
+      "reasons": ["designer_not_famous_enough"],
+      "lia_quote": "Reject: given it's not a famous designer like Dior or Chanel, it's probably too obscure",
+      "taxonomy": ["obscure_subject", "fame_threshold"]
+    },
+    {
+      "scene": 5,
+      "headline": "Delta Nu's real location?",
+      "verdict": "approve",
+      "reasons": ["interesting", "great_multiturn_hook"],
+      "lia_quote": "Approve: interesting and a great multiturn trivia follow up 'What other famous millennial movie filmed at this location?'",
+      "example_followup": "What other famous millennial movie filmed at this location?",
+      "taxonomy": ["follow_up_drives_value", "cultural_anchor_location"]
+    },
+    {
+      "scene": 5,
+      "headline": "Warner's other big 2001 movie?",
+      "verdict": "approve",
+      "reasons": ["interesting", "millennial_themed", "good_multiturn_hook"],
+      "lia_quote": "Approve: interesting, millennial themed (a core audience), good multiturn prompt 'what role did he play?'",
+      "example_followup": "What role did he play?",
+      "taxonomy": ["audience_fit_millennial", "follow_up_drives_value"]
+    },
+    {
+      "scene": 6,
+      "headline": "What's a 'Jackie'?",
+      "verdict": "reject",
+      "reasons": ["answer_in_scene_dialogue"],
+      "lia_quote": "Reject: asking a trivia question about something that was just said in the scene is not a relevant trivia topic.",
+      "taxonomy": ["answer_stated_in_scene"]
+    },
+    {
+      "scene": 6,
+      "headline": "Where Warner broke Elle's heart? (Il Cielo)",
+      "verdict": "approve_with_edit",
+      "reasons": ["interesting", "great_multiturn_hook_but_freshness_risk"],
+      "lia_quote": "Approve: interesting and good multiturn prompt - 'Is it still open today?' though this one might not be the best depending on how often we refresh the data. If we don't do it daily or weekly, it might be stale",
+      "example_followup": "Is it still open today?",
+      "taxonomy": ["follow_up_drives_value", "freshness_gate_needed", "cultural_anchor_location"]
+    },
+    {
+      "scene": 6,
+      "headline": "Warner's next big role? (Below)",
+      "verdict": "reject",
+      "reasons": ["too_obscure_actor", "same_person_fatigue_cap_needed"],
+      "lia_quote": "Reject: Too obscure, and we need a threshold on the number of trivia questions about one actor especially if he's not as famous as Reese Witherspoon.",
+      "taxonomy": ["obscure_subject", "same_person_overuse"]
+    },
+    {
+      "scene": 7,
+      "headline": "Warner's Breakup Ride? (Porsche Boxster)",
+      "verdict": "approve_with_edit",
+      "reasons": ["fun_easy_hook", "distractors_should_be_porsche_models"],
+      "lia_quote": "Approve: just easy enough to answer without feeling too obvious. Might want to improve the options to be different models of Porsches to make it a bit more challenging. follow up prompt should be something like 'how much does a Porsche Boxster cost?'",
+      "example_followup": "How much does a Porsche Boxster cost?",
+      "taxonomy": ["follow_up_drives_value", "distractors_need_tightening", "cultural_anchor_brand"]
+    },
+    {
+      "scene": 7,
+      "headline": "That Breakup Restaurant's Real Name? (Il Cielo)",
+      "verdict": "reject",
+      "reasons": ["cross_scene_duplicate_of_scene_6_il_cielo"],
+      "lia_quote": "Reject: Dupe?",
+      "taxonomy": ["cross_scene_duplicate"]
+    },
+    {
+      "scene": 7,
+      "headline": "Who designed Elle's iconic shoes? (Arleen C)",
+      "verdict": "reject",
+      "reasons": ["designer_not_famous_enough", "low_credibility_source"],
+      "lia_quote": "Reject: not a famous enough designer to be interesting",
+      "taxonomy": ["obscure_subject", "fame_threshold"]
+    }
+  ]
+}

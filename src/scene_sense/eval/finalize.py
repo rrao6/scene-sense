@@ -14,11 +14,17 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import re
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
+log = logging.getLogger(__name__)
+
+from ..curiosity_judge.judge import judge_card
+from ..realism.config import RealismConfig
+from ..realism.gemini_client import GeminiClient
 from ..realism.moments import load_moments
 from ..ui_schema.emit import emit_ui_bundle
 from .harness import deterministic_eval
@@ -38,14 +44,12 @@ PRIMITIVE_RANK = {
 
 
 def _semantic_key(p: dict) -> str:
-    """Rough dedup key: primitive + scene + normalized headline+body.
+    """Dedup key. Now scene-AGNOSTIC for fact-type cards so Il-Cielo-in-two-scenes collides.
 
-    For cast primitive: key on actor name only — an actor should produce ONE card total,
-    regardless of scene, so enriched cards deduplicate against tier0 placeholders.
-
-    For trivia / scene_iq / facts / how_real_is_it: normalize text more aggressively
-    (strip common fillers, punctuation, ordering of distractor words) so that
-    near-duplicates with different phrasing collide.
+    Three strategies:
+      - cast primitive: key on actor name only (one card per actor, any scene)
+      - trivia: key on correct_answer + primitive (same answer across scenes = dup)
+      - other fact types: normalized headline+body hash, scene-agnostic
     """
     primitive = p.get("primitive", "")
     if primitive == "cast":
@@ -56,28 +60,85 @@ def _semantic_key(p: dict) -> str:
             if m:
                 actor = m.group(1).strip().lower()
         return f"cast:actor:{actor or p.get('prompt_id','?')}"
-    scene = p.get("scene_index", "")
-    # Include the correct-answer option text in the dedup key for trivia — cards that
-    # ask the same thing differently but have the same correct answer should dedup.
-    correct = ""
-    for o in (p.get("options") or []):
-        if o.get("correct"):
-            correct = (o.get("label") or "").lower().strip()
-            break
-    # Aggressive normalization: lowercase, strip stop-filler words, squash whitespace.
-    text = (p.get("headline", "") + " " + p.get("body", "") + " " + correct).lower()
+
+    # Correct-answer dedup for trivia: same answer across scenes = same card
+    if primitive == "trivia":
+        correct = ""
+        for o in (p.get("options") or []):
+            if o.get("correct"):
+                correct = (o.get("label") or "").lower().strip()
+                break
+        ans_norm = re.sub(r"[^a-z0-9 ]+", " ", correct)
+        ans_norm = re.sub(r"\s+", " ", ans_norm).strip()
+        digest = hashlib.sha256(ans_norm.encode()).hexdigest()[:12]
+        return f"trivia:answer:{digest}"
+
+    # Other fact-type cards: headline+body, scene-agnostic (catches Il Cielo-in-2-scenes)
+    text = (p.get("headline", "") + " " + p.get("body", "")).lower()
     text = re.sub(r"[^a-z0-9 ]+", " ", text)
     STOPFILL = {
         "the","a","an","is","was","were","in","of","that","this","to","for","on","at","by",
         "when","what","who","which","where","how","does","did","do","your","her","his","their",
-        "scene","this","film","movie","woods","elle","warner",  # title-specific fillers
+        "scene","this","film","movie",
         "also","just","really","actually","about","with","from",
     }
     tokens = [t for t in text.split() if t and t not in STOPFILL and len(t) > 1]
-    # Sort tokens so different phrasings with same keywords collide.
     normalized = " ".join(sorted(tokens)[:20])
     digest = hashlib.sha256(normalized.encode()).hexdigest()[:12]
-    return f"{primitive}:{scene}:{digest}"
+    return f"{primitive}:{digest}"
+
+
+def _subject_of(p: dict, scene_lookup: dict[int, dict] | None = None) -> str | None:
+    """Extract the primary subject of a card (actor name, BTS figure) for capping.
+
+    Returns None if no identifiable subject (e.g. a location-only card).
+    """
+    primitive = p.get("primitive", "")
+    if primitive == "cast":
+        t0 = p.get("tier0_meta") or {}
+        return (t0.get("celeb_name") or "").strip().lower() or None
+
+    # Trivia / facts / hriv2: look for the correct-answer or a named subject in body/drawer
+    text_fields = [p.get("body") or "", p.get("drawer") or "", p.get("headline") or ""]
+    # Check options for cast_career
+    options = p.get("options") or []
+    if options:
+        correct = next((o.get("label", "") for o in options if o.get("correct")), "")
+        if correct and re.fullmatch(r"[A-Z][A-Za-z'\.\-]+(?:\s+[A-Z][A-Za-z'\.\-]+){1,3}", correct.strip()):
+            return correct.strip().lower()
+    # Fall back to first proper-name run in body
+    for text in text_fields:
+        m = re.search(r"\b([A-Z][A-Za-z'\.\-]+(?:\s+[A-Z][A-Za-z'\.\-]+){1,3})\b", text)
+        if m:
+            candidate = m.group(1).strip()
+            tokens = candidate.split()
+            STOP = {"The","A","An","In","At","On","By","Elle","Warner","Legally","Blonde",
+                    "Harvard","Stanford","Delta","Nu"}
+            if all(t not in STOP for t in tokens) and len(tokens) >= 2:
+                return candidate.lower()
+    return None
+
+
+def _apply_subject_cap(items: list[tuple["PromptScorecard", dict]],
+                       max_per_subject: int = 1) -> list[tuple["PromptScorecard", dict]]:
+    """Cap cards per subject. Keeps highest-scored card for each subject."""
+    # Sort by score descending so best card per subject survives
+    items = sorted(items, key=lambda x: -x[0].overall())
+    seen: dict[str, int] = {}
+    kept = []
+    for sc, p in items:
+        subj = _subject_of(p)
+        if not subj:
+            kept.append((sc, p))
+            continue
+        count = seen.get(subj, 0)
+        if count < max_per_subject:
+            kept.append((sc, p))
+            seen[subj] = count + 1
+        else:
+            log.info("subject_cap: dropped card about '%s' (already have %d)",
+                     subj[:40], count)
+    return kept
 
 
 def _build_scene_lookup(moments_path: Path | str) -> dict[int, dict]:
@@ -297,9 +358,18 @@ def finalize_title(
     generator_outputs: list[Path],
     eval_reports: dict[str, dict] | None = None,
     run_eval: bool = False,
+    run_judge: bool = False,
+    cfg: RealismConfig | None = None,
+    rank_caps: dict[str, int] | None = None,
 ) -> FinalizeResult:
+    """
+    rank_caps: optional per-primitive cap, e.g. {"trivia": 20, "facts": 10, "how_real_is_it": 12}.
+               After dedup + subject cap, sorts by overall score and keeps top N per primitive.
+    """
     """eval_reports: optional map of prompt_id -> deterministic-eval report dict.
-    run_eval: if True, run the deterministic harness inline against each prompt's sources."""
+    run_eval: if True, run the deterministic harness inline against each prompt's sources.
+    run_judge: if True, run the curiosity judge on each prompt (viewer-voice scorer).
+    cfg: required if run_judge is True (for the Gemini client)."""
     if eval_reports is None:
         eval_reports = {}
     scene_lookup = _build_scene_lookup(moments_path)
@@ -324,20 +394,35 @@ def finalize_title(
             except Exception as exc:  # noqa: BLE001
                 eval_reports[pid] = {"pass": False, "notes": [f"eval_exception:{exc}"]}
 
+    # run curiosity judge if requested
+    judgments: dict[str, dict] = {}
+    if run_judge and cfg is not None:
+        judge_client = GeminiClient(cfg)
+        for p in all_prompts:
+            pid = p.get("prompt_id", "")
+            if not pid or pid in judgments:
+                continue
+            scene_ctx = scene_lookup.get(p.get("scene_index"))
+            j = judge_card(judge_client, cfg, p, scene_context=scene_ctx)
+            if j is not None:
+                judgments[pid] = j.as_dict()
+
     # dedup: group by semantic key, keep highest overall score
     scored: list[tuple[PromptScorecard, dict]] = []
     for p in all_prompts:
         scene_ctx = scene_lookup.get(p.get("scene_index"))
         eval_r = eval_reports.get(p.get("prompt_id", ""))
+        curiosity_j = judgments.get(p.get("prompt_id", ""))
         sc = score_prompt(
             p,
             scene_context=scene_ctx,
             scene_moderation_severity=(scene_ctx or {}).get("moderation_severity", "none"),
             eval_report=eval_r,
+            curiosity_judgment=curiosity_j,
         )
         scored.append((sc, p))
 
-    # dedup
+    # Stage 1: dedup by semantic key
     best_by_key: dict[str, tuple[PromptScorecard, dict]] = {}
     for sc, p in scored:
         key = _semantic_key(p)
@@ -345,6 +430,42 @@ def finalize_title(
         if existing is None or sc.overall() > existing[0].overall():
             best_by_key[key] = (sc, p)
     dedup_removed = len(scored) - len(best_by_key)
+
+    # Stage 2: subject cap (max 1 card per non-lead actor / BTS figure)
+    # Run within each primitive separately so e.g. cast enriched + cast_career trivia
+    # can both mention the same actor once.
+    capped_items: list[tuple[PromptScorecard, dict]] = []
+    items_by_prim: dict[str, list[tuple[PromptScorecard, dict]]] = {}
+    for sc, p in best_by_key.values():
+        items_by_prim.setdefault(p.get("primitive", "?"), []).append((sc, p))
+    for prim, items in items_by_prim.items():
+        # cast primitive already dedups per-actor via semantic key
+        if prim == "cast":
+            capped_items.extend(items)
+            continue
+        capped = _apply_subject_cap(items, max_per_subject=1)
+        capped_items.extend(capped)
+    subject_cap_removed = len(best_by_key) - len(capped_items)
+    log.info("finalize: dedup removed %d, subject_cap removed %d", dedup_removed, subject_cap_removed)
+
+    # Rebuild best_by_key with capped items for downstream code
+    best_by_key = {p.get("prompt_id", f"id{i}"): (sc, p) for i, (sc, p) in enumerate(capped_items)}
+
+    # Stage 3: per-primitive top-N ranking (ship only top N by score)
+    if rank_caps:
+        by_prim: dict[str, list[tuple[PromptScorecard, dict]]] = {}
+        for sc, p in capped_items:
+            by_prim.setdefault(p.get("primitive", "?"), []).append((sc, p))
+        ranked: list[tuple[PromptScorecard, dict]] = []
+        for prim, items in by_prim.items():
+            cap = rank_caps.get(prim, 999)
+            # Sort by overall score descending; keep top `cap`
+            items_sorted = sorted(items, key=lambda x: -x[0].overall())
+            kept = items_sorted[:cap]
+            ranked.extend(kept)
+            if len(items_sorted) > cap:
+                log.info("rank_cap: %s kept %d of %d by score", prim, cap, len(items_sorted))
+        best_by_key = {p.get("prompt_id", f"id{i}"): (sc, p) for i, (sc, p) in enumerate(ranked)}
 
     final_prompts: list[dict] = []
     review_cards: list[dict] = []

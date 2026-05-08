@@ -292,11 +292,17 @@ CARD_SCHEMA = {
         "primary_source_url": {"type": "string"},
         "primary_source_citation": {"type": "string"},
         "verbatim_anchor": {"type": "string"},
+        "follow_up_questions": {
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 2,
+            "maxItems": 3,
+        },
         "confidence_level": {"type": "string", "enum": ["high", "medium", "low"]},
         "usable": {"type": "boolean"},
         "reason_if_unusable": {"type": "string"},
     },
-    "required": ["headline", "body", "primary_source_url", "usable"],
+    "required": ["headline", "body", "primary_source_url", "follow_up_questions", "usable"],
 }
 
 
@@ -320,7 +326,13 @@ CARD_SYSTEM = (
     "- Tier A (named experts, museum sites, .edu) — second choice.\n"
     "- Tier B (Mary Beard, Tom Holland, reputable popular history) — third.\n"
     "- NEVER use Tier C (random blogs, fan wikis).\n"
-    "- If no Tier S/A source supports the myth, set usable=false."
+    "- If no Tier S/A source supports the myth, set usable=false.\n"
+    "\n"
+    "FOLLOW-UPS (REQUIRED):\n"
+    "- Emit 2-3 follow_up_questions a curious viewer would tap next. ≤10 words each.\n"
+    "- Examples: 'What really happened to Commodus?', 'Did women ever sit front row?', "
+    "  'Who actually killed Marcus Aurelius?'\n"
+    "- BAD: 'Tell me more.' — must be specific."
 )
 
 
@@ -336,6 +348,7 @@ class MythCard:
     confidence_level: str
     validator_passed: bool
     validator_errors: list[str] = field(default_factory=list)
+    follow_up_questions: list[str] = field(default_factory=list)
 
 
 def generate_myth_card(
@@ -399,6 +412,11 @@ def generate_myth_card(
     if has_tier_s and tier_used not in ("S", "A"):
         errors.append(f"did_not_use_tier_s_when_available")
 
+    # Mandatory follow-ups
+    fups = [(q or "").strip() for q in (resp.get("follow_up_questions") or []) if (q or "").strip()]
+    if len(fups) < 2:
+        errors.append(f"insufficient_follow_ups({len(fups)})")
+
     return MythCard(
         myth=myth,
         headline=headline,
@@ -410,6 +428,7 @@ def generate_myth_card(
         confidence_level=resp.get("confidence_level", "medium"),
         validator_passed=len(errors) == 0,
         validator_errors=errors,
+        follow_up_questions=fups[:3],
     )
 
 
@@ -432,7 +451,7 @@ def to_record(*, title: str, card: MythCard, scene: Scene, model_used: str) -> d
         "drawer": card.body,
         "options": None,
         "reveal": None,
-        "follow_ups": [],
+        "follow_ups": [{"headline": q, "prompt_id": ""} for q in card.follow_up_questions],
         "source_citations": [
             {
                 "type": "primary_text" if card.primary_source_url else "citation",

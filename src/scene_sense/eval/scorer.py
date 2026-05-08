@@ -18,6 +18,9 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
+# re-export for clarity
+_ = field
+
 
 # Same banned names list as the realism validator. Extend as the catalog grows.
 BANNED_ACTOR_NAMES = re.compile(
@@ -59,20 +62,24 @@ class PromptScorecard:
     user_interaction: DimensionScore
     legal_safety: DimensionScore
     monetization_fit: DimensionScore
+    curiosity: DimensionScore = field(default_factory=lambda: DimensionScore(0.5, []))
+    curiosity_verdict: str = ""  # "approve" | "approve_with_edit" | "reject" from judge
 
     def overall(self) -> float:
-        # weighted: accuracy and legal are heavy; others tilt secondary.
+        # Curiosity now carries the most weight — it's how Lia actually reviews.
         w = {
-            "accuracy": 0.25,
-            "legal_safety": 0.20,
-            "prompt_quality": 0.15,
-            "response_quality": 0.10,
-            "verbosity": 0.10,
-            "user_interaction": 0.10,
-            "monetization_fit": 0.10,
+            "curiosity": 0.30,
+            "accuracy": 0.20,
+            "legal_safety": 0.15,
+            "prompt_quality": 0.10,
+            "response_quality": 0.08,
+            "verbosity": 0.07,
+            "user_interaction": 0.05,
+            "monetization_fit": 0.05,
         }
         return round(
-            self.accuracy.score * w["accuracy"]
+            self.curiosity.score * w["curiosity"]
+            + self.accuracy.score * w["accuracy"]
             + self.legal_safety.score * w["legal_safety"]
             + self.prompt_quality.score * w["prompt_quality"]
             + self.response_quality.score * w["response_quality"]
@@ -83,9 +90,15 @@ class PromptScorecard:
         )
 
     def verdict(self) -> str:
+        # Hard gates: accuracy, legal, or curiosity can veto
         if self.accuracy.score < 0.8 or self.legal_safety.score < 0.8:
             return "reject"
-        if self.overall() >= 0.80:
+        # Judge verdict — respect "reject" and "approve_with_edit" directly
+        if self.curiosity_verdict == "reject":
+            return "reject"
+        if self.curiosity_verdict == "approve_with_edit":
+            return "needs_edit"
+        if self.overall() >= 0.75:
             return "approve"
         return "needs_edit"
 
@@ -108,6 +121,8 @@ class PromptScorecard:
         return {
             "overall": self.overall(),
             "verdict": self.verdict(),
+            "curiosity": self.curiosity.as_dict(),
+            "curiosity_verdict": self.curiosity_verdict,
             "accuracy": self.accuracy.as_dict(),
             "verbosity": self.verbosity.as_dict(),
             "prompt_quality": self.prompt_quality.as_dict(),
@@ -347,7 +362,16 @@ def score_prompt(
     scene_context: dict | None = None,
     scene_moderation_severity: str = "none",
     eval_report: dict | None = None,
+    curiosity_judgment: dict | None = None,
 ) -> PromptScorecard:
+    curiosity_score = DimensionScore(0.5, [])
+    curiosity_verdict = ""
+    if curiosity_judgment:
+        curiosity_score = DimensionScore(
+            score=curiosity_judgment.get("composite", 0.5),
+            issues=[curiosity_judgment.get("reasoning", "")] if curiosity_judgment.get("verdict") != "approve" else [],
+        )
+        curiosity_verdict = curiosity_judgment.get("verdict", "")
     return PromptScorecard(
         accuracy=score_accuracy(p, eval_report=eval_report),
         verbosity=score_verbosity(p),
@@ -356,4 +380,6 @@ def score_prompt(
         user_interaction=score_user_interaction(p),
         legal_safety=score_legal_safety(p, scene_moderation_severity=scene_moderation_severity),
         monetization_fit=score_monetization_fit(p),
+        curiosity=curiosity_score,
+        curiosity_verdict=curiosity_verdict,
     )

@@ -1,0 +1,162 @@
+{
+  "reese witherspoon": {
+    "score": 5,
+    "source": "wiki",
+    "details": {
+      "exists": true,
+      "size": 740961,
+      "refs": 306,
+      "url": "https://en.wikipedia.org/wiki/Reese_Witherspoon"
+    }
+  },
+  "jennifer coolidge": {
+    "score": 4,
+    "source": "wiki",
+    "details": {
+      "exists": true,
+      "size": 400252,
+      "refs": 108,
+      "url": "https://en.wikipedia.org/wiki/Jennifer_Coolidge"
+    }
+  },
+  "luke wilson": {
+    "score": 3,
+    "source": "wiki",
+    "details": {
+      "exists": true,
+      "size": 149743,
+      "refs": 29,
+      "url": "https://en.wikipedia.org/wiki/Luke_Wilson"
+    }
+  },
+  "raquel welch": {
+    "score": 5,
+    "source": "wiki",
+    "details": {
+      "exists": true,
+      "size": 451268,
+      "refs": 264,
+      "url": "https://en.wikipedia.org/wiki/Raquel_Welch"
+    }
+  },
+  "linda cardellini": {
+    "score": 3,
+    "source": "wiki",
+    "details": {
+      "exists": true,
+      "size": 193391,
+      "refs": 54,
+      "url": "https://en.wikipedia.org/wiki/Linda_Cardellini"
+    }
+  },
+  "holland taylor": {
+    "score": 3,
+    "source": "wiki",
+    "details": {
+      "exists": true,
+      "size": 187637,
+      "refs": 28,
+      "url": "https://en.wikipedia.org/wiki/Holland_Taylor"
+    }
+  },
+  "ali larter": {
+    "score": 4,
+    "source": "wiki",
+    "details": {
+      "exists": true,
+      "size": 316445,
+      "refs": 133,
+      "url": "https://en.wikipedia.org/wiki/Ali_Larter"
+    }
+  },
+  "matthew davis": {
+    "score": 3,
+    "source": "wiki",
+    "details": {
+      "exists": true,
+      "size": 160864,
+      "refs": 29,
+      "url": "https://en.wikipedia.org/wiki/Matthew_Davis"
+    }
+  },
+  "lisa arch": {
+    "score": 2,
+    "source": "wiki",
+    "details": {
+      "exists": true,
+      "size": 95092,
+      "refs": 2,
+      "url": "https://en.wikipedia.org/wiki/Lisa_Arch"
+    }
+  },
+  "jessica cauffiel": {
+    "score": 2,
+    "source": "wiki",
+    "details": {
+      "exists": true,
+      "size": 107425,
+      "refs": 11,
+      "url": "https://en.wikipedia.org/wiki/Jessica_Cauffiel"
+    }
+  },
+  "sophie de rakoff": {
+    "score": 1,
+    "source": "wiki",
+    "details": {}
+  },
+  "arleen c": {
+    "score": 1,
+    "source": "wiki",
+    "details": {}
+  },
+  "reese witherspoon's": {
+    "score": 1,
+    "source": "wiki",
+    "details": {}
+  },
+  "elle woods": {
+    "score": 1,
+    "source": "wiki",
+    "details": {}
+  },
+  "delta nu": {
+    "score": 1,
+    "source": "wiki",
+    "details": {}
+  },
+  "reese witherspoon legally blonde": {
+    "score": 1,
+    "source": "wiki",
+    "details": {}
+  },
+  "elle woods. reese witherspoon": {
+    "score": 1,
+    "source": "wiki",
+    "details": {}
+  },
+  "warner huntington iii. matthew": {
+    "score": 1,
+    "source": "wiki",
+    "details": {}
+  },
+  "warner huntington iii": {
+    "score": 1,
+    "source": "wiki",
+    "details": {}
+  },
+  "alanna ubach's": {
+    "score": 1,
+    "source": "wiki",
+    "details": {}
+  },
+  "alanna ubach": {
+    "score": 1,
+    "source": "wiki",
+    "details": {}
+  },
+  "jessica cauffiel's": {
+    "score": 1,
+    "source": "wiki",
+    "details": {}
+  }
+}

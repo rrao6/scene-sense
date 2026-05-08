@@ -14,6 +14,7 @@ from typing import Any
 from ..realism.config import RealismConfig
 from ..realism.gemini_client import GeminiClient
 from ..realism.moments import Scene, TitleMoments, load_moments
+from ..fame.gate import extract_named_subjects, subject_passes_fame_gate
 from ..realism.source_bank import (
     _best_substring_ratio,
     _classify_url,
@@ -67,11 +68,26 @@ TOPIC_SYSTEM = (
     "You propose verifiable trivia TOPICS for a specific scene in a film. "
     "You do NOT answer the trivia yet — only propose topics that a Google search could verify. "
     "Rules:\n"
-    "- Topics must be specific and testable (e.g. 'Linda Cardellini's TV roles after Legally Blonde' "
-    "rather than 'Linda Cardellini is famous').\n"
+    "- Topics must be specific and testable.\n"
     "- Each topic must include a concrete search_query a search engine could run.\n"
     "- Do not propose anything that depends on interpretation or opinion.\n"
-    "- Prefer topics that tie tightly to what is visible or audible in the scene."
+    "\n"
+    "CRITICAL REJECT RULES — do NOT propose:\n"
+    "- Anything whose answer is ALREADY SAID in the scene's dialogue (the viewer just heard it).\n"
+    "  Example: don't ask 'What's a Jackie?' if a character just said it. Don't ask 'what fabric' \n"
+    "  if the character just named the fabric.\n"
+    "- Anything whose answer is VISIBLY OBVIOUS from what's on screen (e.g. 'what color is \n"
+    "  the dress?' when the dress is pink on camera).\n"
+    "- Subjects that aren't culturally famous enough for a general viewer: obscure costume \n"
+    "  designers, minor supporting actors known only in that film, fictional in-universe names. \n"
+    "  Rule of thumb: if the person/place/brand doesn't have a substantial Wikipedia page, skip it.\n"
+    "\n"
+    "PREFER topics that:\n"
+    "- Tie to a culturally FAMOUS person, place, or brand (Reese Witherspoon, Jennifer Coolidge, \n"
+    "  Luke Wilson; Pearl Harbor / Princess Diaries / Cruel Intentions crossovers; Porsche, \n"
+    "  Harvard, etc.).\n"
+    "- Have a natural FOLLOW-UP question a viewer would want to tap next.\n"
+    "- Reveal something BTS or historical that extends the scene — not just restates it."
 )
 
 
@@ -83,12 +99,15 @@ class TriviaTopic:
     intrigue_score: float = 0.5
 
 
-def propose_topics(client: GeminiClient, *, title: str, scene: Scene) -> list[TriviaTopic]:
+def propose_topics(client: GeminiClient, *, title: str, scene: Scene, topic_count: int = 4) -> list[TriviaTopic]:
     prompt = (
         f"Film: {title}\n\n"
         f"Scene:\n{scene.as_llm_context()}\n\n"
-        "Propose 2-4 trivia topics anchored to this specific scene. Each must include a "
-        "search_query a reader could verify. Discard topics that are opinion or interpretation."
+        f"Propose {topic_count}-{topic_count+2} trivia topics anchored to this specific scene. "
+        "Each must include a concrete search_query. "
+        "Never propose topics whose answer is literally in the scene's dialogue or visible on screen. "
+        "Favor topics that tie to culturally famous people, places, or brands, and that lead "
+        "naturally to a follow-up question a viewer would want to tap next."
     )
     resp = client.structured(
         namespace="trivia_topics",
@@ -99,17 +118,81 @@ def propose_topics(client: GeminiClient, *, title: str, scene: Scene) -> list[Tr
     )
     out: list[TriviaTopic] = []
     for t in resp.get("topics", []):
-        if not t.get("topic") or not t.get("search_query"):
+        topic_text = t.get("topic") or ""
+        search_q = t.get("search_query") or ""
+        if not topic_text or not search_q:
+            continue
+        # Post-proposal veto 1: reject topics whose answer is already in the scene.
+        if _topic_answer_in_scene(topic_text + " " + search_q, scene):
             continue
         out.append(
             TriviaTopic(
-                topic=t["topic"],
+                topic=topic_text,
                 category=t.get("category", "production"),
-                search_query=t["search_query"],
+                search_query=search_q,
                 intrigue_score=float(t.get("intrigue_score") or 0.5),
             )
         )
     return out
+
+
+def apply_fame_gate(
+    topics: list[TriviaTopic], cfg, client, min_score: int = 3
+) -> list[TriviaTopic]:
+    """Keep only topics where all named subjects meet the fame threshold.
+
+    Applies only to categories where subject fame matters: cast_career, cameo,
+    object_prop (brands/designers), location (famous location).
+    """
+    FAME_GATED_CATEGORIES = {"cast_career", "cameo", "object_prop", "location"}
+    kept: list[TriviaTopic] = []
+    for t in topics:
+        if t.category not in FAME_GATED_CATEGORIES:
+            kept.append(t)
+            continue
+        subjects = extract_named_subjects(t.topic + " " + t.search_query)
+        if not subjects:
+            # No named subjects to check — pass through
+            kept.append(t)
+            continue
+        passed, details = subject_passes_fame_gate(subjects, cfg, client=client, min_score=min_score)
+        if passed:
+            kept.append(t)
+        else:
+            log.info("fame_gate rejected topic: %s (subjects=%s)",
+                     t.topic[:60], [f"{d['name']}:{d['score']}" for d in details])
+    return kept
+
+
+def _topic_answer_in_scene(topic_text: str, scene: Scene) -> bool:
+    """Reject topics whose answer is already stated in the scene dialogue or visible in objects.
+
+    Heuristic: if >=2 meaningful tokens from the topic also appear in dialogue_highlights
+    OR key_objects OR key_actions, the topic is too-close-to-the-scene.
+    """
+    STOP = {"the","a","an","is","are","was","were","and","or","of","in","on","at","by","to",
+            "for","that","this","what","who","which","how","when","where","whose","why",
+            "did","does","do","been","have","has","had","with","from","as","it","its",
+            "her","him","his","hers","they","them","their","film","movie","scene","show",
+            "topic","question","answer","about"}
+    # Extract meaningful tokens from the topic text
+    topic_tokens = {
+        w.lower() for w in re.findall(r"[A-Za-z][A-Za-z'\-]+", topic_text)
+        if len(w) >= 4 and w.lower() not in STOP
+    }
+    if len(topic_tokens) < 2:
+        return False
+
+    # Build a scene reference string
+    scene_text = " ".join((scene.dialogue_highlights or []) + (scene.key_objects or []) + (scene.key_actions or []))
+    scene_tokens = {
+        w.lower() for w in re.findall(r"[A-Za-z][A-Za-z'\-]+", scene_text)
+        if len(w) >= 4 and w.lower() not in STOP
+    }
+
+    overlap = topic_tokens & scene_tokens
+    # Require at least 2 shared tokens to be confident the answer is in-scene
+    return len(overlap) >= 2
 
 
 # -------------------- Step 2: ground a topic via Google Search --------------------
@@ -205,11 +288,18 @@ MCQ_SCHEMA = {
             "maxItems": 3,
         },
         "reveal": {"type": "string"},
+        "follow_up_questions": {
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 2,
+            "maxItems": 3,
+            "description": "Natural next-questions a curious viewer would tap to go deeper. ≤10 words each.",
+        },
         "confidence_level": {"type": "string", "enum": ["high", "medium", "low"]},
         "usable": {"type": "boolean"},
         "reason_if_unusable": {"type": "string"},
     },
-    "required": ["headline", "question", "answer", "distractors", "usable"],
+    "required": ["headline", "question", "answer", "distractors", "follow_up_questions", "usable"],
 }
 
 MCQ_SYSTEM = (
@@ -232,6 +322,14 @@ MCQ_SYSTEM = (
     "    * Must NOT rephrase the correct answer.\n"
     "- REVEAL: one natural sentence that teaches the viewer a new bit of context AFTER they answer. "
     "  Not a tautological restatement of the question.\n"
+    "- FOLLOW_UP_QUESTIONS: 2-3 natural next-questions, ≤10 words each, phrased as something a "
+    "  curious viewer would TAP NEXT. Examples that scored well with our reviewer:\n"
+    "    'How much does a Porsche Boxster cost?'\n"
+    "    'Is it still open today?'\n"
+    "    'What role did he play?'\n"
+    "    'What other famous millennial movie filmed at this location?'\n"
+    "    'What was Reese's tribute post?'\n"
+    "  BAD: 'Tell me more.' 'Why?' — too generic. Follow-ups must be SPECIFIC.\n"
     "\n"
     "Source rules:\n"
     "- fact_snippet MUST appear verbatim in one of the provided SOURCES.\n"
@@ -256,6 +354,7 @@ class TriviaPrompt:
     confidence_level: str
     validator_passed: bool
     validator_errors: list[str] = field(default_factory=list)
+    follow_up_questions: list[str] = field(default_factory=list)
 
 
 BLACKLIST_DOMAINS = {
@@ -500,6 +599,11 @@ def generate_mcq(
         q = re.sub(r"\s*\?$", "?", q)
         headline = " ".join(q.split()[:8]).rstrip(",.")
 
+    # Mandatory follow-ups: reject card if none provided (Lia's #1 approve signal)
+    fups = [(q or "").strip() for q in (resp.get("follow_up_questions") or []) if (q or "").strip()]
+    if len(fups) < 2:
+        errors.append(f"insufficient_follow_ups({len(fups)})")
+
     return TriviaPrompt(
         scene_index=scene.scene_index,
         topic=topic,
@@ -514,6 +618,7 @@ def generate_mcq(
         confidence_level=resp.get("confidence_level", "medium"),
         validator_passed=len(errors) == 0,
         validator_errors=errors,
+        follow_up_questions=fups[:3],
     )
 
 
@@ -533,6 +638,7 @@ def to_record(*, title: str, scene: Scene, tp: TriviaPrompt, model_used: str) ->
         "headline": tp.headline,
         "body": tp.question,
         "drawer": tp.reveal,
+        "follow_ups": [{"headline": q, "prompt_id": ""} for q in tp.follow_up_questions],
         "options": [
             {"id": "a", "label": tp.answer, "correct": True},
             *[
@@ -541,7 +647,6 @@ def to_record(*, title: str, scene: Scene, tp: TriviaPrompt, model_used: str) ->
             ],
         ],
         "reveal": tp.reveal,
-        "follow_ups": [],
         "source_citations": [
             {
                 "type": "web_article" if "youtube" not in tp.source_url else "youtube",
@@ -585,6 +690,8 @@ class TriviaSummary:
     title: str
     scenes_processed: int
     topics_proposed: int
+    topics_after_scene_veto: int
+    topics_after_fame_gate: int
     sources_grounded: int
     prompts_generated: int
     prompts_validated: int
@@ -596,6 +703,8 @@ def run_trivia_pipeline(
     cfg: RealismConfig,
     moments_path: Path | str,
     scene_limit: int | None = None,
+    topic_count: int = 6,
+    fame_min_score: int = 3,
 ) -> TriviaSummary:
     client = GeminiClient(cfg)
     title = load_moments(moments_path)
@@ -607,17 +716,27 @@ def run_trivia_pipeline(
     ]
     if scene_limit:
         scenes = scenes[:scene_limit]
-    log.info("trivia: processing %d scenes of %s", len(scenes), title.title)
+    log.info("trivia: processing %d scenes of %s (topic_count=%d, fame_min=%d)",
+             len(scenes), title.title, topic_count, fame_min_score)
 
     records: list[dict[str, Any]] = []
     topics_proposed = 0
+    topics_after_scene_veto = 0
+    topics_after_fame_gate = 0
     sources_grounded = 0
     prompts_generated = 0
     prompts_validated = 0
 
     for scene in scenes:
-        topics = propose_topics(client, title=title.title, scene=scene)
+        # Stage 1: propose (with baked-in scene-overlap veto)
+        topics = propose_topics(client, title=title.title, scene=scene, topic_count=topic_count)
         topics_proposed += len(topics)
+        topics_after_scene_veto += len(topics)  # scene veto applies inside propose
+
+        # Stage 2: fame gate
+        topics = apply_fame_gate(topics, cfg, client, min_score=fame_min_score)
+        topics_after_fame_gate += len(topics)
+
         for topic in topics:
             sources = ground_topic(client, cfg, topic=topic, title=title.title)
             sources_grounded += len(sources)
@@ -638,6 +757,8 @@ def run_trivia_pipeline(
         title=title.title,
         scenes_processed=len(scenes),
         topics_proposed=topics_proposed,
+        topics_after_scene_veto=topics_after_scene_veto,
+        topics_after_fame_gate=topics_after_fame_gate,
         sources_grounded=sources_grounded,
         prompts_generated=prompts_generated,
         prompts_validated=prompts_validated,
