@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SceneIQ Narrative Deck v17</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #050816;
+    color: #f8fafc;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+  .slide {
+    display: none;
+    width: 1920px;
+    height: 1080px;
+    position: relative;
+    overflow: hidden;
+    padding: 72px 92px;
+    background:
+      radial-gradient(circle at 84% 8%, rgba(37, 99, 235, 0.26), transparent 35%),
+      radial-gradient(circle at 8% 96%, rgba(124, 58, 237, 0.20), transparent 36%),
+      linear-gradient(135deg, #050816 0%, #091221 54%, #0b1020 100%);
+  }
+  .slide.active { display: block; }
+  .brand {
+    position: absolute;
+    top: 74px;
+    right: 92px;
+    font-size: 28px;
+    font-weight: 850;
+    letter-spacing: -0.02em;
+  }
+  .brand span { color: #22d3ee; }
+  .eyebrow {
+    margin-bottom: 18px;
+    color: #22d3ee;
+    font-size: 15px;
+    font-weight: 850;
+    letter-spacing: .24em;
+    text-transform: uppercase;
+  }
+  h1 {
+    margin: 0;
+    max-width: 1250px;
+    font-size: 64px;
+    line-height: 1.02;
+    letter-spacing: -0.052em;
+    font-weight: 850;
+  }
+  .subtitle {
+    margin: 20px 0 0;
+    max-width: 1160px;
+    color: #aab7cc;
+    font-size: 25px;
+    line-height: 1.34;
+    font-weight: 430;
+  }
+  .panel {
+    border-radius: 34px;
+    background: rgba(15, 23, 42, .58);
+    border: 1px solid rgba(148, 163, 184, .18);
+    box-shadow: 0 28px 90px rgba(0, 0, 0, .28);
+  }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    height: 34px;
+    padding: 0 14px;
+    margin-bottom: 22px;
+    border-radius: 999px;
+    color: #dff9ff;
+    background: rgba(34, 211, 238, .12);
+    border: 1px solid rgba(34, 211, 238, .26);
+    font-size: 14px;
+    font-weight: 760;
+  }
+
+  /* Slide 1 */
+  .problem-grid {
+    margin-top: 52px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+  .problem-card {
+    min-height: 335px;
+    padding: 38px;
+    border-top: 4px solid #22d3ee;
+  }
+  .problem-card h2, .large-card h2, .metric-card h2 {
+    margin: 0;
+    font-size: 34px;
+    line-height: 1.12;
+    letter-spacing: -.04em;
+    font-weight: 850;
+  }
+  .problem-card p, .large-card p, .metric-card p {
+    margin: 18px 0 0;
+    color: #aab7cc;
+    font-size: 22px;
+    line-height: 1.36;
+  }
+  .problem-footer {
+    margin-top: 28px;
+    padding: 26px 32px;
+    border-radius: 30px;
+    background: linear-gradient(90deg, rgba(34, 211, 238, .12), rgba(124, 58, 237, .14));
+    border: 1px solid rgba(148, 163, 184, .20);
+    color: #dbeafe;
+    font-size: 24px;
+    line-height: 1.3;
+    font-weight: 720;
+  }
+  .problem-footer span {
+    color: #67e8f9;
+    font-weight: 850;
+  }
+
+  /* Slide 2 */
+  .experience {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 34px;
+    height: 600px;
+  }
+  .hero-shot {
+    overflow: hidden;
+    border-radius: 36px;
+    border: 1px solid rgba(255,255,255,.16);
+    box-shadow: 0 30px 90px rgba(0,0,0,.40);
+    background: #030712;
+    position: relative;
+  }
+  .hero-shot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: left center;
+    display: block;
+  }
+  .caption {
+    position: absolute;
+    left: 28px;
+    bottom: 26px;
+    padding: 12px 16px;
+    border-radius: 999px;
+    background: rgba(2, 6, 23, .72);
+    border: 1px solid rgba(255,255,255,.15);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 760;
+  }
+  .experience-side {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 24px;
+  }
+  .small-shot {
+    overflow: hidden;
+    border-radius: 30px;
+    border: 1px solid rgba(255,255,255,.14);
+    background: #030712;
+    position: relative;
+  }
+  .small-shot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: left center;
+    display: block;
+  }
+  .experience .hero-shot img,
+  .experience .small-shot img {
+    object-fit: contain;
+    object-position: center center;
+    background: #030712;
+  }
+  .state-label {
+    position: absolute;
+    left: 20px;
+    bottom: 18px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: rgba(2, 6, 23, .76);
+    border: 1px solid rgba(255,255,255,.16);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+  }
+  .hero-shot .state-label {
+    font-size: 17px;
+    left: 24px;
+    bottom: 22px;
+  }
+  .experience.product-grid {
+    grid-template-columns: 1.08fr .92fr;
+    height: 660px;
+  }
+  .product-tile {
+    overflow: hidden;
+    border-radius: 34px;
+    background: rgba(15, 23, 42, .62);
+    border: 1px solid rgba(148, 163, 184, .18);
+    box-shadow: 0 28px 90px rgba(0,0,0,.30);
+    display: grid;
+    grid-template-rows: 1fr 126px;
+    min-height: 0;
+  }
+  .product-tile.hero { grid-template-rows: 1fr 136px; }
+  .product-tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center center;
+    background: #030712;
+    display: block;
+    min-height: 0;
+  }
+  .product-copy {
+    padding: 22px 26px;
+    background: rgba(2, 6, 23, .80);
+    border-top: 1px solid rgba(255,255,255,.11);
+  }
+  .product-copy h2 {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.1;
+    letter-spacing: -.04em;
+  }
+  .product-copy p {
+    margin: 10px 0 0;
+    color: #aab7cc;
+    font-size: 18px;
+    line-height: 1.32;
+  }
+  .product-side {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 22px;
+    min-height: 0;
+  }
+
+  /* Slide 3 */
+  .arch-wrap {
+    margin-top: 40px;
+    height: 675px;
+    display: grid;
+    grid-template-rows: 500px 135px;
+    gap: 22px;
+  }
+  .arch-flow {
+    display: grid;
+    grid-template-columns: 255px 34px 470px 34px 310px 34px 300px 34px 220px;
+    align-items: stretch;
+    gap: 0;
+  }
+  .arch-node {
+    padding: 24px;
+    border-radius: 30px;
+    background: rgba(15, 23, 42, .64);
+    border: 1px solid rgba(148, 163, 184, .20);
+    box-shadow: 0 24px 70px rgba(0,0,0,.24);
+  }
+  .arch-node h2 {
+    margin: 0;
+    font-size: 25px;
+    line-height: 1.1;
+    letter-spacing: -.04em;
+  }
+  .arch-node p {
+    margin: 12px 0 0;
+    color: #aab7cc;
+    font-size: 16px;
+    line-height: 1.32;
+  }
+  .arch-label {
+    display: inline-flex;
+    height: 28px;
+    align-items: center;
+    padding: 0 11px;
+    margin-bottom: 16px;
+    border-radius: 999px;
+    color: #dff9ff;
+    background: rgba(34, 211, 238, .12);
+    border: 1px solid rgba(34, 211, 238, .26);
+    font-size: 11px;
+    font-weight: 850;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .arch-list {
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+  }
+  .arch-pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    color: #dbeafe;
+    background: rgba(255,255,255,.075);
+    border: 1px solid rgba(255,255,255,.11);
+    font-size: 12px;
+    font-weight: 780;
+  }
+  .arch-arrow {
+    display: grid;
+    place-items: center;
+    color: #67e8f9;
+    font-size: 26px;
+    font-weight: 900;
+  }
+  .pipeline-boxes {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .pipeline-mini {
+    min-height: 94px;
+    padding: 15px;
+    border-radius: 18px;
+    background: rgba(2,6,23,.46);
+    border: 1px solid rgba(148,163,184,.16);
+  }
+  .pipeline-mini strong {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 15px;
+    color: #f8fafc;
+  }
+  .pipeline-mini span {
+    display: block;
+    color: #aab7cc;
+    font-size: 12px;
+    line-height: 1.28;
+  }
+  .gate-list {
+    margin: 18px 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 10px;
+  }
+  .gate-list li {
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(2,6,23,.42);
+    border: 1px solid rgba(148,163,184,.13);
+    color: #dbeafe;
+    font-size: 13px;
+    font-weight: 740;
+  }
+  .output-stack {
+    margin-top: 18px;
+    display: grid;
+    gap: 10px;
+  }
+  .output-item {
+    padding: 13px 14px;
+    border-radius: 16px;
+    background: rgba(124,58,237,.15);
+    border: 1px solid rgba(167,139,250,.26);
+    color: #ede9fe;
+    font-size: 14px;
+    font-weight: 780;
+  }
+  .feedback-band {
+    display: grid;
+    grid-template-columns: 1fr 34px 1fr 34px 1fr;
+    align-items: stretch;
+  }
+  .feedback-card {
+    padding: 22px 24px;
+    border-radius: 26px;
+    background: rgba(34, 211, 238, .08);
+    border: 1px dashed rgba(34, 211, 238, .42);
+  }
+  .feedback-card h3 {
+    margin: 0;
+    font-size: 21px;
+    letter-spacing: -.035em;
+  }
+  .feedback-card p {
+    margin: 8px 0 0;
+    color: #aab7cc;
+    font-size: 15px;
+    line-height: 1.3;
+  }
+
+  /* Slide 4 */
+  .value-layout {
+    margin-top: 44px;
+    display: grid;
+    grid-template-columns: .82fr 1fr;
+    gap: 34px;
+    height: 650px;
+  }
+  .intent-panel {
+    padding: 38px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    background: linear-gradient(145deg, rgba(8, 47, 73, .72), rgba(15, 23, 42, .72));
+    border-color: rgba(34, 211, 238, .22);
+  }
+  .intent-panel h2 {
+    margin: 0;
+    max-width: 340px;
+    font-size: 56px;
+    line-height: .94;
+    letter-spacing: -.06em;
+  }
+  .intent-panel p {
+    margin: 34px 0 0;
+    color: #aab7cc;
+    font-size: 22px;
+    line-height: 1.34;
+  }
+  .intent-tags {
+    display: flex;
+    gap: 12px;
+  }
+  .intent-tags span {
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.13);
+    color: #dbeafe;
+    font-size: 12px;
+    font-weight: 800;
+  }
+  .steps {
+    display: grid;
+    gap: 18px;
+  }
+  .value-step {
+    min-height: 138px;
+    padding: 26px;
+    border-radius: 24px;
+    background: rgba(15, 23, 42, .62);
+    border: 1px solid rgba(148, 163, 184, .18);
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 24px;
+    align-items: center;
+  }
+  .step-num {
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    border-radius: 18px;
+    background: rgba(37, 99, 235, .22);
+    color: #93c5fd;
+    font-size: 24px;
+    font-weight: 900;
+  }
+  .value-step:nth-child(2) .step-num { background: rgba(34, 211, 238, .18); color: #67e8f9; }
+  .value-step:nth-child(3) .step-num { background: rgba(16, 185, 129, .18); color: #6ee7b7; }
+  .value-step:nth-child(4) .step-num { background: rgba(124, 58, 237, .22); color: #c4b5fd; }
+  .value-step h2 {
+    margin: 0;
+    font-size: 28px;
+    letter-spacing: -.04em;
+  }
+  .value-step p {
+    margin: 8px 0 0;
+    color: #aab7cc;
+    font-size: 17px;
+    line-height: 1.3;
+  }
+
+  /* Slide 5 */
+  .surface-layout {
+    margin-top: 50px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 34px;
+    height: 650px;
+  }
+  .surface {
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: 1fr 230px;
+  }
+  .surface img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: left center;
+    display: block;
+  }
+  .surface-copy {
+    padding: 30px 34px;
+    background: rgba(2,6,23,.82);
+    border-top: 1px solid rgba(255,255,255,.12);
+  }
+  .surface-copy h2 {
+    margin: 0;
+    font-size: 34px;
+    letter-spacing: -.04em;
+  }
+  .surface-copy p {
+    margin: 14px 0 0;
+    color: #aab7cc;
+    font-size: 21px;
+    line-height: 1.34;
+  }
+  .dual-surface-layout {
+    margin-top: 44px;
+    display: grid;
+    grid-template-columns: 620px 1fr;
+    gap: 42px;
+    height: 662px;
+    align-items: stretch;
+  }
+  .phone-proof {
+    overflow: hidden;
+    border-radius: 34px;
+    background: rgba(8, 5, 18, .72);
+    border: 1px solid rgba(255,255,255,.14);
+    box-shadow: 0 30px 90px rgba(0,0,0,.34);
+    display: grid;
+    place-items: center;
+  }
+  .phone-proof img {
+    width: auto;
+    height: 600px;
+    max-width: 94%;
+    object-fit: contain;
+    object-position: center center;
+    display: block;
+  }
+  .summary-stack {
+    display: grid;
+    gap: 20px;
+  }
+  .summary-box {
+    padding: 30px 32px;
+    border-radius: 30px;
+    background: rgba(15, 23, 42, .64);
+    border: 1px solid rgba(148, 163, 184, .18);
+  }
+  .summary-box h2 {
+    margin: 0;
+    font-size: 31px;
+    letter-spacing: -.04em;
+  }
+  .summary-box p {
+    margin: 12px 0 0;
+    color: #aab7cc;
+    font-size: 20px;
+    line-height: 1.34;
+  }
+
+
+  .surface-options {
+    margin-top: 46px;
+    height: 650px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 26px;
+  }
+  .surface-option {
+    overflow: hidden;
+    border-radius: 32px;
+    background: rgba(15,23,42,.64);
+    border: 1px solid rgba(148,163,184,.18);
+    box-shadow: 0 26px 80px rgba(0,0,0,.30);
+    display: grid;
+    grid-template-rows: 1fr 190px;
+    min-height: 0;
+  }
+  .surface-option img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center center;
+    background: #030712;
+    display: block;
+    min-height: 0;
+  }
+  .surface-option.phone img {
+    padding: 16px 0;
+  }
+  .surface-option-copy {
+    padding: 26px 28px;
+    background: rgba(2,6,23,.82);
+    border-top: 1px solid rgba(255,255,255,.12);
+  }
+  .surface-option-copy h2 {
+    margin: 0;
+    font-size: 30px;
+    letter-spacing: -.04em;
+  }
+  .surface-option-copy p {
+    margin: 12px 0 0;
+    color: #aab7cc;
+    font-size: 18px;
+    line-height: 1.34;
+  }
+
+  /* Slide 6 */
+  .metric-grid {
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  .metric-card {
+    min-height: 365px;
+    padding: 34px;
+    border-top: 4px solid #22d3ee;
+  }
+  .metric-card ul {
+    margin: 22px 0 0;
+    padding-left: 22px;
+    color: #aab7cc;
+    font-size: 21px;
+    line-height: 1.45;
+  }
+  .metric-card li { margin-bottom: 12px; }
+</style>
+</head>
+<body>
+  <section class="slide active" data-slide="1">
+    <div class="brand">Scene<span>IQ</span></div>
+    <div class="eyebrow">Problem</div>
+    <h1>Viewer curiosity already exists. Tubi just does not capture it yet.</h1>
+    <p class="subtitle">People already search actors, songs, outfits, trivia, and “is this real?” moments while watching. SceneIQ brings that behavior back into the Tubi experience instead of letting it happen off-platform.</p>
+    <div class="problem-grid">
+      <div class="panel problem-card">
+        <div class="tag">Viewer behavior</div>
+        <h2>Curiosity leaves the player</h2>
+        <p>Viewers pause, pull out their phone, search Google, open IMDb, or do nothing. The intent exists, but Tubi does not own the moment.</p>
+      </div>
+      <div class="panel problem-card" style="border-top-color:#a78bfa">
+        <div class="tag">Business surface</div>
+        <h2>A new premium surface is missing</h2>
+        <p>In-player and pause-state curiosity can become useful, opt-in surface area for contextual partners without feeling like another ad break.</p>
+      </div>
+      <div class="panel problem-card" style="border-top-color:#34d399">
+        <div class="tag">Data advantage</div>
+        <h2>Intent data is lost</h2>
+        <p>Searches, saves, actor interest, product curiosity, and follow-up questions could improve recommendations, ML ranking, user profiles, and ads targeting.</p>
+      </div>
+    </div>
+    <div class="problem-footer"><span>Mobile handoff:</span> the second-screen habit is already happening. SceneIQ gives viewers a reason to download or re-open Tubi when they want to continue the interaction.</div>
+  </section>
+
+  <section class="slide" data-slide="2">
+    <div class="brand">Scene<span>IQ</span></div>
+    <div class="eyebrow">Product experience</div>
+    <h1>Prompts become useful moments inside playback</h1>
+    <p class="subtitle">The product surface is not a generic overlay. It is contextual, scene-aware, and designed for optional interaction.</p>
+    <div class="experience product-grid">
+      <div class="product-tile hero">
+        <img src="sceneiq-pdf-web/sceneiq-page-31.png" alt="SceneIQ actor recognition prompt">
+        <div class="product-copy">
+          <h2>In-player prompt</h2>
+          <p>A recognition or scene prompt appears as one clear state tied to the moment on screen.</p>
+        </div>
+      </div>
+      <div class="product-side">
+        <div class="product-tile">
+          <img src="sceneiq-pdf-web/sceneiq-page-19.png" alt="SceneIQ brand prompt creative">
+          <div class="product-copy">
+            <h2>Contextual brand moment</h2>
+            <p>Relevant partner or object curiosity can become an optional prompt without interrupting playback.</p>
+          </div>
+        </div>
+        <div class="product-tile">
+          <img src="sceneiq-pdf-web/sceneiq-page-29.png" alt="Tubi discovery follow-through">
+          <div class="product-copy">
+            <h2>Discovery follow-through</h2>
+            <p>Engagement can inform the next title, rail, or discovery surface after the prompt.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="3">
+    <div class="brand">Scene<span>IQ</span></div>
+    <div class="eyebrow">Architecture</div>
+    <h1>SceneIQ turns VLM scene data into verified prompts</h1>
+    <p class="subtitle">A source-grounded pipeline enriches sceneInfo, validates evidence during generation, then emits client-ready prompts and audit artifacts.</p>
+    <div class="arch-wrap">
+      <div class="arch-flow">
+        <div class="arch-node">
+          <div class="arch-label">Input</div>
+          <h2>Tubi Moments VLM</h2>
+          <p>Scene JSON with cuepoint-level context.</p>
+          <div class="arch-list">
+            <span class="arch-pill">music</span><span class="arch-pill">cast</span><span class="arch-pill">actor</span><span class="arch-pill">location</span><span class="arch-pill">themes</span><span class="arch-pill">cuepoint</span><span class="arch-pill">context</span><span class="arch-pill">wiki</span>
+          </div>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node">
+          <div class="arch-label">Generation</div>
+          <h2>Parallel prompt pipelines</h2>
+          <div class="pipeline-boxes">
+            <div class="pipeline-mini"><strong>sceneInfo direct</strong><span>Deterministic prompts from VLM payload.</span></div>
+            <div class="pipeline-mini"><strong>Cast enrichment</strong><span>Gemini + Google Search grounding.</span></div>
+            <div class="pipeline-mini"><strong>Trivia / MCQ</strong><span>Topic proposal, search, fetch, answer checks.</span></div>
+            <div class="pipeline-mini"><strong>Realism + facts</strong><span>Official sources and trusted press.</span></div>
+          </div>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node">
+          <div class="arch-label">Validation</div>
+          <h2>Hard gates per pipeline</h2>
+          <ul class="gate-list">
+            <li>Google Search URL provenance</li>
+            <li>Source quality blacklist</li>
+            <li>Quote / snippet match</li>
+            <li>Cross-source corroboration</li>
+            <li>MCQ option-kind checks</li>
+          </ul>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node">
+          <div class="arch-label">Finalize</div>
+          <h2>Dedup, score, eval</h2>
+          <p>Semantic dedup, 7-dimension scorecard, verdict logic, and optional live re-fetch / quote re-match.</p>
+          <div class="arch-list">
+            <span class="arch-pill">approve</span><span class="arch-pill">needs_edit</span><span class="arch-pill">reject</span>
+          </div>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node">
+          <div class="arch-label">Output</div>
+          <h2>Client bundle</h2>
+          <div class="output-stack">
+            <div class="output-item">ui.json prompts</div>
+            <div class="output-item">cards.md review</div>
+            <div class="output-item">final.json audit</div>
+            <div class="output-item">review.json scorecard</div>
+          </div>
+        </div>
+      </div>
+      <div class="feedback-band">
+        <div class="feedback-card"><h3>User engagement events</h3><p>Prompt opens, answers, dismissals, saves, title jumps, and send-to-phone actions.</p></div>
+        <div class="arch-arrow">↺</div>
+        <div class="feedback-card"><h3>Ranking + profile signals</h3><p>Cast, genre, topic, object, brand, music, and action-intent features.</p></div>
+        <div class="arch-arrow">↺</div>
+        <div class="feedback-card"><h3>Recommendations + partner intelligence</h3><p>Better adjacent-title discovery and high-intent contextual audiences.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="4">
+    <div class="brand">Scene<span>IQ</span></div>
+    <div class="eyebrow">Strategic value</div>
+    <h1>Watch history says what played. SceneIQ says what mattered.</h1>
+    <p class="subtitle">The incrementality is explicit curiosity inside playback: signals that are more expressive than completion rate, genre, or title-level watch history alone.</p>
+    <div class="value-layout">
+      <div class="panel intent-panel">
+        <h2>Intent inside the player</h2>
+        <p>SceneIQ prompts create lightweight moments where users reveal what they care about: actors, brands, objects, topics, domains, and follow-up intent.</p>
+        <div class="intent-tags"><span>Clicked</span><span>Expanded</span><span>Watchlisted</span></div>
+      </div>
+      <div class="steps">
+        <div class="value-step"><div class="step-num">1</div><div><h2>Prompt is shown at the right scene</h2><p>Actor fact, scene trivia, realism prompt, BTS detail, or a follow-up question.</p></div></div>
+        <div class="value-step"><div class="step-num">2</div><div><h2>User chooses to engage</h2><p>The action is explicit, timed, and tied to a title, scene, entity, or topic.</p></div></div>
+        <div class="value-step"><div class="step-num">3</div><div><h2>Signal becomes a model feature</h2><p>Cast affinity, topic depth, brand interest, and entity similarity update profiles and rankers.</p></div></div>
+        <div class="value-step"><div class="step-num">4</div><div><h2>System improves the next action</h2><p>Recommendations, prompt ranking, ad segments, and personalization become more relevant.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="5">
+    <div class="brand">Scene<span>IQ</span></div>
+    <div class="eyebrow">Second surface</div>
+    <h1>Incremental value comes from opt-in moments, not more ad clutter</h1>
+    <p class="subtitle">SceneIQ can support lightweight prompts during playback and deeper actions during pause or mobile handoff when the viewer asks for more.</p>
+    <div class="surface-options">
+      <div class="surface-option">
+        <img src="sceneiq-pdf-web/sceneiq-page-31.png" alt="During playback prompt">
+        <div class="surface-option-copy"><h2>During playback</h2><p>Lightweight recognition, facts, or trivia appear only as useful scene context.</p></div>
+      </div>
+      <div class="surface-option">
+        <img src="sceneiq-pdf-web/sceneiq-page-28.png" alt="Pause and send-to-phone action">
+        <div class="surface-option-copy"><h2>Pause</h2><p>When the viewer pauses, SceneIQ can expand into richer context, commerce, or title discovery.</p></div>
+      </div>
+      <div class="surface-option phone">
+        <img src="file:///Users/rrao/.cursor/projects/Users-rrao-scene-sense/assets/image-e490bc45-2108-4a59-96eb-ecc1050e25a4.png" alt="Dual-screen phone handoff">
+        <div class="surface-option-copy"><h2>Dual screen</h2><p>Send-to-phone keeps the TV clean while follow-up questions, saves, and next actions continue on mobile.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="6">
+    <div class="brand">Scene<span>IQ</span></div>
+    <div class="eyebrow">Pilot scorecard</div>
+    <h1>What we need to prove</h1>
+    <p class="subtitle">A strong pilot should measure user value, system trust, recommendation signal quality, and partner monetization potential.</p>
+    <div class="metric-grid">
+      <div class="panel metric-card"><div class="tag">Engagement</div><h2>Do users interact?</h2><ul><li>Prompt open rate</li><li>Trivia answer rate</li><li>Dwell / dismiss rate</li><li>Return engagement</li></ul></div>
+      <div class="panel metric-card" style="border-top-color:#fbbf24"><div class="tag">Trust</div><h2>Are prompts safe to ship?</h2><ul><li>Evidence match rate</li><li>Eval pass rate</li><li>Rejection reasons</li><li>Human review effort</li></ul></div>
+      <div class="panel metric-card" style="border-top-color:#34d399"><div class="tag">ML value</div><h2>Do signals improve ranking?</h2><ul><li>Watchlist / title jump</li><li>Adjacent title CTR</li><li>Profile enrichment</li><li>Prompt rank lift</li></ul></div>
+      <div class="panel metric-card" style="border-top-color:#a78bfa"><div class="tag">Business</div><h2>Can partners use it?</h2><ul><li>Partner action CTR</li><li>Send-to-phone rate</li><li>Audience segment quality</li><li>Brand-safe categories</li></ul></div>
+    </div>
+  </section>
+
+  <script>
+    const slide = new URLSearchParams(location.search).get("slide") || "1";
+    document.querySelectorAll(".slide").forEach((el) => el.classList.toggle("active", el.dataset.slide === slide));
+  </script>
+</body>
+</html>

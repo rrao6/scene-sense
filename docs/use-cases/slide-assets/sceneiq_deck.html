@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SceneIQ Deck</title>
+<style>
+  :root {
+    --bg: #050816;
+    --panel: rgba(15, 23, 42, 0.86);
+    --panel2: rgba(2, 6, 23, 0.76);
+    --line: rgba(148, 163, 184, 0.24);
+    --text: #f8fafc;
+    --muted: #a8b3c7;
+    --soft: #dbeafe;
+    --blue: #4f8cff;
+    --cyan: #22d3ee;
+    --green: #34d399;
+    --amber: #fbbf24;
+    --purple: #a78bfa;
+    --pink: #f472b6;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+    background: #000;
+    color: var(--text);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  body {
+    display: block;
+    overflow: hidden;
+  }
+
+  .slide {
+    display: none;
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    padding: 72px 88px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 86% 12%, rgba(79, 140, 255, 0.28), transparent 32%),
+      radial-gradient(circle at 8% 96%, rgba(167, 139, 250, 0.20), transparent 34%),
+      linear-gradient(135deg, #020617 0%, #07111f 48%, #0b1020 100%);
+  }
+
+  .slide.active { display: block; }
+
+  .eyebrow {
+    color: var(--cyan);
+    font-size: 18px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 64px;
+    line-height: 1.02;
+    letter-spacing: -0.045em;
+    font-weight: 850;
+  }
+
+  .subtitle {
+    margin: 20px 0 0;
+    color: var(--muted);
+    font-size: 26px;
+    line-height: 1.35;
+    max-width: 1280px;
+  }
+
+  .header {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 50px;
+  }
+
+  .brand {
+    position: absolute;
+    top: 66px;
+    right: 88px;
+    color: #dbeafe;
+    font-size: 26px;
+    font-weight: 850;
+    letter-spacing: -0.02em;
+  }
+
+  .brand span {
+    color: var(--cyan);
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 32px;
+    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.34);
+  }
+
+  .thin-panel {
+    background: rgba(15, 23, 42, 0.58);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+  }
+
+  .label {
+    color: #e2e8f0;
+    font-size: 16px;
+    font-weight: 850;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .card-title {
+    font-size: 28px;
+    line-height: 1.12;
+    font-weight: 850;
+    letter-spacing: -0.025em;
+    margin: 0;
+  }
+
+  .card-copy {
+    color: var(--muted);
+    font-size: 20px;
+    line-height: 1.34;
+    margin: 14px 0 0;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 16px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    color: #e5eefc;
+    font-size: 15px;
+    font-weight: 750;
+    white-space: nowrap;
+  }
+
+  .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    display: inline-block;
+  }
+
+  .arrow {
+    color: #64748b;
+    font-size: 42px;
+    font-weight: 500;
+    display: grid;
+    place-items: center;
+  }
+
+  .slide-1-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.12fr 1.05fr 0.12fr 1.05fr 0.12fr 1.05fr;
+    gap: 16px;
+    align-items: stretch;
+    height: 340px;
+  }
+
+  .flow-card {
+    padding: 32px;
+    min-width: 0;
+    position: relative;
+  }
+
+  .flow-number {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    font-size: 18px;
+    font-weight: 850;
+    margin-bottom: 24px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .slide-1-bottom {
+    position: absolute;
+    left: 88px;
+    right: 88px;
+    bottom: 72px;
+    display: grid;
+    grid-template-columns: 1.1fr 1.1fr 1fr;
+    gap: 22px;
+  }
+
+  .loop-card {
+    padding: 24px 26px;
+    min-height: 142px;
+  }
+
+  .loop-card h3 {
+    margin: 0 0 10px;
+    font-size: 24px;
+    letter-spacing: -0.02em;
+  }
+
+  .loop-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 18px;
+    line-height: 1.35;
+  }
+
+  .loop-band {
+    position: absolute;
+    left: 88px;
+    right: 88px;
+    bottom: 245px;
+    padding: 18px 24px;
+    border-radius: 24px;
+    background: linear-gradient(90deg, rgba(34, 211, 238, 0.13), rgba(167, 139, 250, 0.13));
+    border: 1px solid rgba(34, 211, 238, 0.22);
+    color: #dff9ff;
+    font-size: 22px;
+    font-weight: 750;
+    text-align: center;
+  }
+
+  .value-map {
+    display: grid;
+    grid-template-columns: 0.92fr 1.08fr;
+    gap: 34px;
+    height: 690px;
+  }
+
+  .hero-statement {
+    padding: 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .big-metric {
+    font-size: 70px;
+    line-height: 0.95;
+    letter-spacing: -0.05em;
+    font-weight: 850;
+    color: white;
+    margin: 0 0 18px;
+  }
+
+  .metric-copy {
+    color: var(--muted);
+    font-size: 24px;
+    line-height: 1.32;
+    max-width: 560px;
+  }
+
+  .loop-steps {
+    display: grid;
+    gap: 18px;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 74px 1fr;
+    gap: 22px;
+    align-items: center;
+    padding: 24px;
+  }
+
+  .step-num {
+    width: 74px;
+    height: 74px;
+    border-radius: 24px;
+    display: grid;
+    place-items: center;
+    font-size: 26px;
+    font-weight: 850;
+  }
+
+  .step h3 {
+    margin: 0 0 8px;
+    font-size: 27px;
+    letter-spacing: -0.02em;
+  }
+
+  .step p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 19px;
+    line-height: 1.34;
+  }
+
+  .usecase-table {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 28px;
+  }
+
+  .table-header,
+  .usecase-row {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr 1.05fr 1.05fr;
+    gap: 18px;
+    align-items: stretch;
+  }
+
+  .table-header div {
+    color: #8ba3bf;
+    font-size: 15px;
+    font-weight: 850;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0 20px;
+  }
+
+  .cell {
+    padding: 22px 24px;
+    border-radius: 22px;
+    background: rgba(15, 23, 42, 0.68);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    min-height: 122px;
+  }
+
+  .cell strong {
+    display: block;
+    font-size: 22px;
+    line-height: 1.16;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+  }
+
+  .cell span {
+    display: block;
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1.32;
+  }
+
+  .footer-note {
+    position: absolute;
+    left: 88px;
+    right: 88px;
+    bottom: 72px;
+    padding: 24px 30px;
+    border-radius: 26px;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(52, 211, 153, 0.26);
+    color: #dcfce7;
+    font-size: 23px;
+    line-height: 1.32;
+    font-weight: 720;
+  }
+
+  .footer-note span {
+    color: #86efac;
+  }
+
+  .color-blue { color: var(--blue); }
+  .color-cyan { color: var(--cyan); }
+  .color-green { color: var(--green); }
+  .color-amber { color: var(--amber); }
+  .color-purple { color: var(--purple); }
+  .color-pink { color: var(--pink); }
+  .bg-blue { background: rgba(79, 140, 255, 0.16); border-color: rgba(79, 140, 255, 0.34); }
+  .bg-cyan { background: rgba(34, 211, 238, 0.14); border-color: rgba(34, 211, 238, 0.32); }
+  .bg-green { background: rgba(52, 211, 153, 0.14); border-color: rgba(52, 211, 153, 0.32); }
+  .bg-amber { background: rgba(251, 191, 36, 0.14); border-color: rgba(251, 191, 36, 0.32); }
+  .bg-purple { background: rgba(167, 139, 250, 0.15); border-color: rgba(167, 139, 250, 0.32); }
+  .bg-pink { background: rgba(244, 114, 182, 0.14); border-color: rgba(244, 114, 182, 0.32); }
+</style>
+</head>
+<body>
+  <section class="slide active" data-slide="1">
+    <div class="brand">Scene<span>IQ</span></div>
+    <div class="header">
+      <div class="eyebrow">System overview</div>
+      <h1>From scene context to high-intent intelligence</h1>
+      <p class="subtitle">SceneIQ turns what is happening on screen into contextual prompts, captures explicit user curiosity, and feeds richer signals into recommendation, profile, and ads systems.</p>
+    </div>
+
+    <div class="slide-1-grid">
+      <div class="panel flow-card bg-blue">
+        <div class="flow-number color-blue">1</div>
+        <h2 class="card-title">Understand the scene</h2>
+        <p class="card-copy">Use VLM output to identify cast, dialogue, objects, songs, topics, and domain context.</p>
+        <div class="chip-row">
+          <span class="chip"><span class="dot" style="background: var(--blue)"></span> VLM JSON</span>
+          <span class="chip"><span class="dot" style="background: var(--blue)"></span> Content graph</span>
+        </div>
+      </div>
+
+      <div class="arrow">-&gt;</div>
+
+      <div class="panel flow-card bg-purple">
+        <div class="flow-number color-purple">2</div>
+        <h2 class="card-title">Generate prompts</h2>
+        <p class="card-copy">Create actor facts, trivia, realism checks, and follow-ups with grounding and validation.</p>
+        <div class="chip-row">
+          <span class="chip"><span class="dot" style="background: var(--green)"></span> Cast</span>
+          <span class="chip"><span class="dot" style="background: var(--amber)"></span> Trivia</span>
+          <span class="chip"><span class="dot" style="background: var(--purple)"></span> Facts</span>
+        </div>
+      </div>
+
+      <div class="arrow">-&gt;</div>
+
+      <div class="panel flow-card bg-cyan">
+        <div class="flow-number color-cyan">3</div>
+        <h2 class="card-title">Capture interaction</h2>
+        <p class="card-copy">Track prompt opens, actor clicks, source expands, dwell, title jumps, and watchlist actions.</p>
+        <div class="chip-row">
+          <span class="chip"><span class="dot" style="background: var(--cyan)"></span> Explicit intent</span>
+          <span class="chip"><span class="dot" style="background: var(--cyan)"></span> High signal</span>
+        </div>
+      </div>
+
+      <div class="arrow">-&gt;</div>
+
+      <div class="panel flow-card bg-green">
+        <div class="flow-number color-green">4</div>
+        <h2 class="card-title">Improve models</h2>
+        <p class="card-copy">Feed cast affinity, genre nuance, topic interest, and brand curiosity into ranking and identity systems.</p>
+        <div class="chip-row">
+          <span class="chip"><span class="dot" style="background: var(--green)"></span> Recs</span>
+          <span class="chip"><span class="dot" style="background: var(--green)"></span> Ads</span>
+          <span class="chip"><span class="dot" style="background: var(--green)"></span> Profiles</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="loop-band">Feedback loop: interaction data ranks better prompts, recommends better titles, and builds richer user profiles over time.</div>
+
+    <div class="slide-1-bottom">
+      <div class="thin-panel loop-card">
+        <h3 class="color-cyan">User engagement events</h3>
+        <p>Actor prompt clicked, trivia opened, source expanded, title clicked, or watchlist added.</p>
+      </div>
+      <div class="thin-panel loop-card">
+        <h3 class="color-blue">ML ranking features</h3>
+        <p>Cast affinity, topic affinity, genre nuance, object interest, and entity graph updates.</p>
+      </div>
+      <div class="thin-panel loop-card">
+        <h3 class="color-purple">Ads and partner intelligence</h3>
+        <p>High-intent audience signals from brands, actors, places, domains, and behaviors.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="2">
+    <div class="brand">Scene<span>IQ</span></div>
+    <div class="header">
+      <div class="eyebrow">Why this matters</div>
+      <h1>Watch history tells us what played. SceneIQ tells us what mattered.</h1>
+      <p class="subtitle">The incremental value is not another content label. It is a new class of structured user intent created inside the viewing experience.</p>
+    </div>
+
+    <div class="value-map">
+      <div class="panel hero-statement bg-cyan">
+        <div>
+          <p class="big-metric">Intent<br>inside<br>playback</p>
+          <p class="metric-copy">SceneIQ prompts act like lightweight, contextual questions. When a user engages, the system learns what they care about at the moment of attention.</p>
+        </div>
+        <div class="chip-row">
+          <span class="chip"><span class="dot" style="background: var(--cyan)"></span> Clicked</span>
+          <span class="chip"><span class="dot" style="background: var(--amber)"></span> Expanded</span>
+          <span class="chip"><span class="dot" style="background: var(--purple)"></span> Watchlisted</span>
+        </div>
+      </div>
+
+      <div class="loop-steps">
+        <div class="thin-panel step bg-blue">
+          <div class="step-num bg-blue color-blue">1</div>
+          <div>
+            <h3>Prompt is shown in context</h3>
+            <p>Example: actor fact, scene trivia, realism prompt, or follow-up question.</p>
+          </div>
+        </div>
+        <div class="thin-panel step bg-cyan">
+          <div class="step-num bg-cyan color-cyan">2</div>
+          <div>
+            <h3>User chooses to engage</h3>
+            <p>The action is explicit, timed, and tied to a scene, title, actor, object, or topic.</p>
+          </div>
+        </div>
+        <div class="thin-panel step bg-green">
+          <div class="step-num bg-green color-green">3</div>
+          <div>
+            <h3>Signal updates profile and ranking</h3>
+            <p>Cast affinity, topic depth, brand interest, and entity similarity become model features.</p>
+          </div>
+        </div>
+        <div class="thin-panel step bg-purple">
+          <div class="step-num bg-purple color-purple">4</div>
+          <div>
+            <h3>System improves the next action</h3>
+            <p>Recommendations, prompt ranking, partner segments, and personalization get better.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="3">
+    <div class="brand">Scene<span>IQ</span></div>
+    <div class="header">
+      <div class="eyebrow">Concrete use cases</div>
+      <h1>Three examples of richer signal from prompts</h1>
+      <p class="subtitle">Each interaction can become a structured feature for recommendations, identity, or ads without asking the user to fill out a profile.</p>
+    </div>
+
+    <div class="usecase-table">
+      <div class="table-header">
+        <div>User moment</div>
+        <div>High-intent signal</div>
+        <div>Product response</div>
+        <div>Business value</div>
+      </div>
+
+      <div class="usecase-row">
+        <div class="cell bg-blue">
+          <strong>Actor prompt clicked</strong>
+          <span>User taps Jennifer Coolidge while watching Legally Blonde.</span>
+        </div>
+        <div class="cell">
+          <strong>Cast affinity</strong>
+          <span>Actor interest is explicit, current, and tied to a title context.</span>
+        </div>
+        <div class="cell">
+          <strong>Recommend adjacent titles</strong>
+          <span>Show more Jennifer Coolidge movies and offer add-to-watchlist.</span>
+        </div>
+        <div class="cell">
+          <strong>Higher discovery intent</strong>
+          <span>Moves from passive impression to a measurable title exploration path.</span>
+        </div>
+      </div>
+
+      <div class="usecase-row">
+        <div class="cell bg-amber">
+          <strong>Object prompt opened</strong>
+          <span>User engages with trivia about a Porsche, fashion item, song, or location.</span>
+        </div>
+        <div class="cell">
+          <strong>Topic and brand interest</strong>
+          <span>Objects become audience signals: cars, fashion, travel, music, food.</span>
+        </div>
+        <div class="cell">
+          <strong>Rank related content</strong>
+          <span>Boost titles and prompts that match adjacent interests and entity graphs.</span>
+        </div>
+        <div class="cell">
+          <strong>Partner intelligence</strong>
+          <span>Creates high-intent segments that are more expressive than genre alone.</span>
+        </div>
+      </div>
+
+      <div class="usecase-row">
+        <div class="cell bg-purple">
+          <strong>Realism prompt expanded</strong>
+          <span>User explores legal, medical, sports, military, or historical context.</span>
+        </div>
+        <div class="cell">
+          <strong>Domain depth</strong>
+          <span>Interest moves beyond broad genre into specific expertise areas.</span>
+        </div>
+        <div class="cell">
+          <strong>Personalize prompt ranking</strong>
+          <span>Show more factual, expert, or behind-the-scenes prompts for that user.</span>
+        </div>
+        <div class="cell">
+          <strong>Richer identity graph</strong>
+          <span>Improves user profiles, content discovery, and premium audience modeling.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      <span>Incrementality:</span> SceneIQ adds structured intent that raw viewing history misses: cast, objects, topics, brands, domains, curiosity depth, and explicit downstream actions.
+    </div>
+  </section>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get("slide") || "1";
+    document.querySelectorAll(".slide").forEach((slide) => {
+      slide.classList.toggle("active", slide.dataset.slide === requested);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SceneIQ Final Slides</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 82% 10%, rgba(59, 130, 246, 0.28), transparent 34%),
+      radial-gradient(circle at 10% 92%, rgba(139, 92, 246, 0.20), transparent 36%),
+      linear-gradient(135deg, #030712 0%, #07111f 48%, #0b1020 100%);
+    color: #f8fafc;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .slide {
+    display: none;
+    width: 1920px;
+    height: 1080px;
+    padding: 58px 88px;
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 82% 10%, rgba(59, 130, 246, 0.28), transparent 34%),
+      radial-gradient(circle at 10% 92%, rgba(139, 92, 246, 0.20), transparent 36%),
+      linear-gradient(135deg, #030712 0%, #07111f 48%, #0b1020 100%);
+  }
+  .slide.active { display: block; }
+
+  .brand {
+    position: absolute;
+    top: 56px;
+    right: 88px;
+    font-size: 26px;
+    line-height: 1;
+    font-weight: 850;
+    letter-spacing: -0.02em;
+  }
+  .brand span { color: #22d3ee; }
+
+  .eyebrow {
+    margin: 0 0 16px;
+    color: #22d3ee;
+    font-size: 17px;
+    font-weight: 850;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0;
+    max-width: 1350px;
+    color: #fff;
+    font-size: 56px;
+    line-height: 1.02;
+    font-weight: 850;
+    letter-spacing: -0.045em;
+  }
+
+  .subtitle {
+    margin: 18px 0 0;
+    max-width: 1260px;
+    color: #a8b3c7;
+    font-size: 22px;
+    line-height: 1.34;
+    font-weight: 500;
+  }
+
+  .panel {
+    background: rgba(15, 23, 42, 0.78);
+    border: 1px solid rgba(148, 163, 184, 0.20);
+    border-radius: 28px;
+    box-shadow: 0 24px 70px rgba(0,0,0,0.34);
+  }
+
+  .soft {
+    background: rgba(15, 23, 42, 0.52);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 22px;
+  }
+
+  .label {
+    color: #8da2bc;
+    font-size: 14px;
+    font-weight: 850;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .card-title {
+    margin: 0;
+    font-size: 25px;
+    line-height: 1.12;
+    font-weight: 850;
+    letter-spacing: -0.025em;
+  }
+
+  .copy {
+    margin: 12px 0 0;
+    color: #a8b3c7;
+    font-size: 18px;
+    line-height: 1.34;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 34px;
+    padding: 0 13px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.10);
+    color: #e5eefc;
+    font-size: 13px;
+    font-weight: 760;
+    white-space: nowrap;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+  }
+
+  .blue { color: #60a5fa; }
+  .cyan { color: #22d3ee; }
+  .green { color: #34d399; }
+  .amber { color: #fbbf24; }
+  .purple { color: #a78bfa; }
+  .pink { color: #f472b6; }
+
+  .bg-blue { background: rgba(59, 130, 246, 0.15); border-color: rgba(96, 165, 250, 0.30); }
+  .bg-cyan { background: rgba(34, 211, 238, 0.13); border-color: rgba(34, 211, 238, 0.28); }
+  .bg-green { background: rgba(52, 211, 153, 0.13); border-color: rgba(52, 211, 153, 0.28); }
+  .bg-amber { background: rgba(251, 191, 36, 0.13); border-color: rgba(251, 191, 36, 0.28); }
+  .bg-purple { background: rgba(167, 139, 250, 0.14); border-color: rgba(167, 139, 250, 0.28); }
+  .bg-pink { background: rgba(244, 114, 182, 0.13); border-color: rgba(244, 114, 182, 0.28); }
+
+  /* Slide 1 */
+  .arch {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: 280px 530px 330px 270px 250px;
+    gap: 18px;
+    height: 445px;
+  }
+
+  .arch-col {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .mini {
+    padding: 15px;
+    flex: 1;
+  }
+
+  .mini h3 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    line-height: 1.1;
+    font-weight: 850;
+  }
+
+  .mini p,
+  .mini li {
+    margin: 0;
+    color: #a8b3c7;
+    font-size: 13px;
+    line-height: 1.34;
+  }
+
+  .pipeline-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 11px;
+    flex: 1;
+  }
+
+  .pipeline {
+    padding: 11px 13px;
+    border-radius: 17px;
+    background: rgba(2, 6, 23, 0.44);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    display: grid;
+    grid-template-columns: 1fr 138px;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .pipeline strong {
+    display: block;
+    font-size: 14px;
+    line-height: 1.15;
+  }
+
+  .pipeline span {
+    display: block;
+    margin-top: 4px;
+    color: #a8b3c7;
+    font-size: 12px;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    padding: 7px 8px;
+    font-size: 10px;
+    font-weight: 850;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+
+  .loop-strip {
+    margin-top: 20px;
+    padding: 16px 22px;
+    border-radius: 24px;
+    background: linear-gradient(90deg, rgba(34,211,238,0.14), rgba(167,139,250,0.13));
+    border: 1px solid rgba(34,211,238,0.22);
+    color: #e0faff;
+    font-size: 19px;
+    line-height: 1.28;
+    font-weight: 760;
+    text-align: center;
+  }
+
+  .feedback-row {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 22px;
+  }
+
+  .feedback {
+    padding: 18px 22px;
+    min-height: 104px;
+  }
+
+  .feedback h3 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    line-height: 1.15;
+    font-weight: 850;
+  }
+
+  .feedback p {
+    margin: 0;
+    color: #a8b3c7;
+    font-size: 15px;
+    line-height: 1.32;
+  }
+
+  /* Slide 2 */
+  .two-col {
+    margin-top: 34px;
+    display: grid;
+    grid-template-columns: 0.92fr 1.08fr;
+    gap: 34px;
+    height: 590px;
+  }
+
+  .big-panel {
+    padding: 36px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .big-phrase {
+    margin: 0 0 20px;
+    color: white;
+    font-size: 58px;
+    line-height: 0.96;
+    font-weight: 850;
+    letter-spacing: -0.055em;
+  }
+
+  .big-copy {
+    max-width: 580px;
+    color: #a8b3c7;
+    font-size: 21px;
+    line-height: 1.32;
+  }
+
+  .steps {
+    display: grid;
+    gap: 14px;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: 22px;
+    align-items: center;
+    padding: 18px 22px;
+  }
+
+  .num {
+    width: 72px;
+    height: 72px;
+    border-radius: 22px;
+    display: grid;
+    place-items: center;
+    font-size: 26px;
+    font-weight: 850;
+  }
+
+  .step h3 {
+    margin: 0 0 7px;
+    font-size: 23px;
+    line-height: 1.13;
+    letter-spacing: -0.025em;
+  }
+
+  .step p {
+    margin: 0;
+    color: #a8b3c7;
+    font-size: 16px;
+    line-height: 1.34;
+  }
+
+  /* Slide 3 */
+  .usecases {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 26px;
+  }
+
+  .case {
+    padding: 24px;
+    min-height: 430px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .case-kicker {
+    color: #8da2bc;
+    font-size: 13px;
+    font-weight: 850;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+
+  .case h2 {
+    margin: 0;
+    font-size: 29px;
+    line-height: 1.06;
+    letter-spacing: -0.035em;
+  }
+
+  .case .example {
+    margin: 10px 0 20px;
+    color: #cbd5e1;
+    font-size: 16px;
+  }
+
+  .case-block {
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: rgba(2, 6, 23, 0.40);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    margin-bottom: 14px;
+  }
+
+  .case-block strong {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+
+  .case-block span {
+    display: block;
+    color: #a8b3c7;
+    font-size: 15px;
+    line-height: 1.34;
+  }
+
+  .case-outcome {
+    margin-top: auto;
+    padding: 16px 18px;
+    border-radius: 18px;
+    font-size: 18px;
+    line-height: 1.22;
+    font-weight: 850;
+    text-align: center;
+  }
+
+  .bottom-note {
+    margin-top: 20px;
+    padding: 18px 24px;
+    border-radius: 24px;
+    background: rgba(52, 211, 153, 0.12);
+    border: 1px solid rgba(52, 211, 153, 0.26);
+    color: #dcfce7;
+    font-size: 19px;
+    line-height: 1.3;
+    font-weight: 740;
+  }
+
+  .bottom-note strong { color: #86efac; }
+</style>
+</head>
+<body>
+  <section class="slide active" data-slide="1">
+    <div class="brand">Scene<span>IQ</span></div>
+    <div class="eyebrow">Architecture overview</div>
+    <h1>SceneIQ turns scene understanding into verified prompts and learning signals</h1>
+    <p class="subtitle">A source-grounded generation stack creates prompt candidates, validates evidence, re-checks citations, then ships a client-ready bundle whose engagement data feeds ML and ads systems.</p>
+
+    <div class="arch">
+      <div class="panel arch-col">
+        <div class="label">1. Input</div>
+        <div class="soft mini bg-blue">
+          <h3>Tubi Moments VLM</h3>
+          <p>Scenes, cast, dialogue, objects, themes, songs, and wiki-matched trivia.</p>
+        </div>
+        <div class="soft mini">
+          <h3>Domain + eligibility</h3>
+          <p>Classify legal, historical, medical, military, hacking, rom-com, etc.; skip flagged or short scenes.</p>
+        </div>
+      </div>
+
+      <div class="panel arch-col">
+        <div class="label">2. Generation pipelines</div>
+        <div class="pipeline-list">
+          <div class="pipeline"><div><strong class="green">Tier-0</strong><span>Wiki trivia, audio song IDs, detected cast from VLM output.</span></div><div class="pill bg-green">Deterministic</div></div>
+          <div class="pipeline"><div><strong class="cyan">Cast enrichment</strong><span>Unique actors → grounded actor fact → verbatim quote gate.</span></div><div class="pill bg-cyan">Gemini + Search</div></div>
+          <div class="pipeline"><div><strong class="blue">Trivia</strong><span>Topic proposer → grounded web search → fetch/filter → retry.</span></div><div class="pill bg-blue">Gemini + Fetch</div></div>
+          <div class="pipeline"><div><strong class="amber">How real is it?</strong><span>Myth discovery using Tier-S sources, fallback to Tier A/B domains.</span></div><div class="pill bg-amber">Source Library</div></div>
+          <div class="pipeline"><div><strong class="purple">Facts</strong><span>Title-level topic clusters, Tier A/B press sources, follow-ups.</span></div><div class="pill bg-purple">Gemini + Press</div></div>
+        </div>
+      </div>
+
+      <div class="panel arch-col">
+        <div class="label">3. Validate + score</div>
+        <div class="soft mini bg-amber">
+          <h3>Generation-time gates</h3>
+          <p>Google grounding URLs only, quote match, source blacklist, expert gate, MCQ option-kind checks.</p>
+        </div>
+        <div class="soft mini">
+          <h3>Finalizer</h3>
+          <p>Semantic dedup, 7-dim scorecard, verdict logic: approve, reject, or needs-edit.</p>
+        </div>
+      </div>
+
+      <div class="panel arch-col">
+        <div class="label">4. Eval</div>
+        <div class="soft mini bg-cyan">
+          <h3>Live re-fetch</h3>
+          <p>Re-fetch cited URLs and verify title grounding still holds.</p>
+        </div>
+        <div class="soft mini">
+          <h3>Quote re-match</h3>
+          <p>Re-match evidence verbatim and feed the accuracy score before output.</p>
+        </div>
+      </div>
+
+      <div class="panel arch-col">
+        <div class="label">5. Output</div>
+        <div class="soft mini bg-purple">
+          <h3>Client bundle</h3>
+          <p>ui.json contract: actorFact, sceneFact, actorTrivia, sceneTrivia.</p>
+        </div>
+        <div class="soft mini bg-cyan">
+          <h3>Audit + HITL</h3>
+          <p>final.json, review.json, and prompts/HITL review with verdicts and evidence.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="loop-strip">Post-click feedback loop: prompt opens, actor clicks, watchlist adds, and title jumps become ranking features, user-profile depth, recommendation lift, and partner/ads intelligence.</div>
+
+    <div class="feedback-row">
+      <div class="soft feedback bg-cyan">
+        <h3>User engagement</h3>
+        <p>What did the user click, expand, ask about, skip, save, or follow into another title?</p>
+      </div>
+      <div class="soft feedback bg-blue">
+        <h3>ML signals</h3>
+        <p>Cast affinity, topic depth, brand/object interest, genre nuance, and entity graph updates.</p>
+      </div>
+      <div class="soft feedback bg-purple">
+        <h3>Business outcomes</h3>
+        <p>Better recommendations, richer identity profiles, higher-intent segments, and partner insights.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="2">
+    <div class="brand">Scene<span>IQ</span></div>
+    <div class="eyebrow">Strategic value</div>
+    <h1>Watch history says what played. SceneIQ says what mattered.</h1>
+    <p class="subtitle">The incrementality is explicit curiosity inside playback: signals that are more expressive than completion rate, genre, or title-level watch history alone.</p>
+
+    <div class="two-col">
+      <div class="panel big-panel bg-cyan">
+        <div>
+          <p class="big-phrase">Intent<br>inside<br>the player</p>
+          <p class="big-copy">SceneIQ prompts create lightweight moments where users reveal what they care about: actors, brands, objects, topics, domains, and follow-up intent.</p>
+        </div>
+        <div>
+          <span class="chip"><span class="dot" style="background:#22d3ee"></span>Clicked</span>
+          <span class="chip"><span class="dot" style="background:#fbbf24"></span>Expanded</span>
+          <span class="chip"><span class="dot" style="background:#a78bfa"></span>Watchlisted</span>
+        </div>
+      </div>
+
+      <div class="steps">
+        <div class="soft step bg-blue">
+          <div class="num bg-blue blue">1</div>
+          <div><h3>Prompt is shown at the right scene</h3><p>Actor fact, scene trivia, realism prompt, BTS detail, or a follow-up question.</p></div>
+        </div>
+        <div class="soft step bg-cyan">
+          <div class="num bg-cyan cyan">2</div>
+          <div><h3>User chooses to engage</h3><p>The action is explicit, timed, and tied to a title, scene, entity, or topic.</p></div>
+        </div>
+        <div class="soft step bg-green">
+          <div class="num bg-green green">3</div>
+          <div><h3>Signal becomes a model feature</h3><p>Cast affinity, topic depth, brand interest, and entity similarity update profiles and rankers.</p></div>
+        </div>
+        <div class="soft step bg-purple">
+          <div class="num bg-purple purple">4</div>
+          <div><h3>System improves the next action</h3><p>Recommendations, prompt ranking, ads segments, and personalization become more relevant.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="3">
+    <div class="brand">Scene<span>IQ</span></div>
+    <div class="eyebrow">Concrete use cases</div>
+    <h1>Three prompt interactions that create richer signal</h1>
+    <p class="subtitle">Each prompt can turn an in-player curiosity moment into a feature for recommendations, user identity, or partner intelligence.</p>
+
+    <div class="usecases">
+      <div class="panel case bg-blue">
+        <div class="case-kicker">Actor affinity</div>
+        <h2>Jennifer Coolidge prompt</h2>
+        <p class="example">User taps an actor prompt while watching Legally Blonde.</p>
+        <div class="case-block"><strong>Signal</strong><span>Explicit cast interest tied to a specific title and scene context.</span></div>
+        <div class="case-block"><strong>Product response</strong><span>Recommend other Jennifer Coolidge titles and offer add-to-watchlist.</span></div>
+        <div class="case-outcome bg-blue blue">Higher title exploration intent</div>
+      </div>
+
+      <div class="panel case bg-amber">
+        <div class="case-kicker">Object and brand intent</div>
+        <h2>Porsche trivia prompt</h2>
+        <p class="example">User opens trivia about a car, fashion item, song, location, or prop.</p>
+        <div class="case-block"><strong>Signal</strong><span>Topic and brand interest that raw genre labels do not capture.</span></div>
+        <div class="case-block"><strong>Product response</strong><span>Rank related titles, prompts, and partner segments using the entity graph.</span></div>
+        <div class="case-outcome bg-amber amber">High-intent partner signal</div>
+      </div>
+
+      <div class="panel case bg-purple">
+        <div class="case-kicker">Domain depth</div>
+        <h2>Realism prompt expanded</h2>
+        <p class="example">User explores legal, medical, sports, military, or historical context.</p>
+        <div class="case-block"><strong>Signal</strong><span>Specific domain interest beyond broad title or genre preference.</span></div>
+        <div class="case-block"><strong>Product response</strong><span>Personalize future prompts and enrich the user identity graph.</span></div>
+        <div class="case-outcome bg-purple purple">Richer audience quality</div>
+      </div>
+    </div>
+
+    <div class="bottom-note"><strong>Incrementality:</strong> SceneIQ adds structured intent that raw viewing history misses: cast, objects, topics, brands, domains, curiosity depth, and explicit downstream actions.</div>
+  </section>
+
+  <script>
+    const slide = new URLSearchParams(location.search).get("slide") || "1";
+    document.querySelectorAll(".slide").forEach((el) => {
+      el.classList.toggle("active", el.dataset.slide === slide);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SceneIQ Clean Deck</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #070b16;
+    color: #f8fafc;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  .slide {
+    display: none;
+    width: 1920px;
+    height: 1080px;
+    padding: 72px 88px;
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 88% 10%, rgba(56, 189, 248, 0.18), transparent 34%),
+      radial-gradient(circle at 7% 92%, rgba(124, 58, 237, 0.18), transparent 36%),
+      linear-gradient(135deg, #070b16 0%, #0a1222 54%, #0b1020 100%);
+  }
+  .slide.active { display: block; }
+
+  .brand {
+    position: absolute;
+    top: 74px;
+    right: 88px;
+    font-size: 26px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .brand span { color: #22d3ee; }
+
+  .eyebrow {
+    color: #22d3ee;
+    font-size: 15px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+
+  h1 {
+    margin: 0;
+    max-width: 1220px;
+    font-size: 58px;
+    line-height: 1.04;
+    letter-spacing: -0.045em;
+    font-weight: 800;
+  }
+
+  .subtitle {
+    margin: 18px 0 0;
+    max-width: 1160px;
+    color: #aab7cc;
+    font-size: 24px;
+    line-height: 1.34;
+    font-weight: 400;
+  }
+
+  .canvas {
+    margin-top: 56px;
+    height: 630px;
+    border-radius: 36px;
+    padding: 34px;
+    background: rgba(15, 23, 42, 0.46);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    box-shadow: 0 28px 90px rgba(0, 0, 0, 0.28);
+  }
+
+  .flow {
+    display: grid;
+    grid-template-columns: 1.02fr 1.08fr 1.26fr 1.08fr 1.08fr;
+    gap: 22px;
+    height: 420px;
+  }
+
+  .stage {
+    position: relative;
+    border-radius: 28px;
+    padding: 28px 28px 24px;
+    background: rgba(11, 18, 32, 0.82);
+    border: 1px solid rgba(148, 163, 184, 0.20);
+  }
+
+  .stage::after {
+    content: "→";
+    position: absolute;
+    right: -31px;
+    top: 132px;
+    color: #718096;
+    font-size: 42px;
+    line-height: 1;
+    font-weight: 300;
+    z-index: 5;
+  }
+  .stage.last::after { display: none; }
+
+  .number {
+    width: 38px;
+    height: 38px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 22px;
+    background: rgba(255,255,255,0.08);
+    color: #e2e8f0;
+    font-size: 16px;
+    font-weight: 800;
+  }
+
+  .stage h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 28px;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    font-weight: 800;
+  }
+
+  .stage p {
+    margin: 14px 0 0;
+    color: #aab7cc;
+    font-size: 18px;
+    line-height: 1.34;
+  }
+
+  .stage.input { border-top: 4px solid #60a5fa; }
+  .stage.context { border-top: 4px solid #22d3ee; }
+  .stage.generate { border-top: 4px solid #a78bfa; }
+  .stage.trust { border-top: 4px solid #fbbf24; }
+  .stage.output { border-top: 4px solid #34d399; }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 999px;
+    color: #dbeafe;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.10);
+    font-size: 13px;
+    line-height: 1;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .loop {
+    margin-top: 42px;
+    border-radius: 24px;
+    padding: 26px 32px;
+    text-align: center;
+    color: #dff9ff;
+    background: linear-gradient(90deg, rgba(34,211,238,0.14), rgba(167,139,250,0.13));
+    border: 1px solid rgba(34, 211, 238, 0.22);
+    font-size: 24px;
+    line-height: 1.3;
+    font-weight: 650;
+  }
+
+  /* Detail slide */
+  .detail-grid {
+    margin-top: 46px;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 28px;
+    height: 710px;
+  }
+
+  .panel {
+    border-radius: 32px;
+    padding: 32px;
+    background: rgba(15, 23, 42, 0.56);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    box-shadow: 0 28px 90px rgba(0, 0, 0, 0.24);
+  }
+
+  .pipeline-list {
+    display: grid;
+    gap: 14px;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 210px 1fr 280px;
+    gap: 18px;
+    align-items: center;
+    min-height: 92px;
+    border-radius: 22px;
+    padding: 20px 22px;
+    background: rgba(2, 6, 23, 0.42);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+  }
+
+  .row h3 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+  }
+
+  .row p {
+    margin: 0;
+    color: #aab7cc;
+    font-size: 16px;
+    line-height: 1.32;
+  }
+
+  .source-pill {
+    justify-self: end;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: rgba(34, 211, 238, 0.12);
+    border: 1px solid rgba(34, 211, 238, 0.24);
+    color: #dff9ff;
+    font-size: 13px;
+    line-height: 1.15;
+    font-weight: 800;
+    text-align: center;
+  }
+
+  .trust-stack {
+    display: grid;
+    gap: 18px;
+  }
+
+  .trust-card {
+    border-radius: 24px;
+    padding: 26px 28px;
+    background: rgba(2, 6, 23, 0.42);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+  }
+
+  .trust-card h3 {
+    margin: 0;
+    font-size: 25px;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+  }
+
+  .trust-card p {
+    margin: 12px 0 0;
+    color: #aab7cc;
+    font-size: 17px;
+    line-height: 1.34;
+  }
+
+  .accent-blue { color: #60a5fa; }
+  .accent-cyan { color: #22d3ee; }
+  .accent-green { color: #34d399; }
+  .accent-amber { color: #fbbf24; }
+  .accent-purple { color: #a78bfa; }
+</style>
+</head>
+<body>
+  <section class="slide active" data-slide="1">
+    <div class="brand">Scene<span>IQ</span></div>
+    <div class="eyebrow">System architecture</div>
+    <h1>Verified contextual prompts, built from grounded scene intelligence</h1>
+    <p class="subtitle">SceneIQ converts Tubi Moments VLM output into source-backed prompts, validates the evidence, ships a client-ready bundle, and turns interaction into high-value learning signals.</p>
+
+    <div class="canvas">
+      <div class="flow">
+        <div class="stage input">
+          <div class="number">1</div>
+          <h2>Input</h2>
+          <p>Tubi Moments VLM JSON: cuepoints, scenes, cast, dialogue, objects, locations, themes, music, and wiki context.</p>
+        </div>
+
+        <div class="stage context">
+          <div class="number">2</div>
+          <h2>Scene Context</h2>
+          <p>Classify domain, gate unsafe or short scenes, and prepare eligible moments.</p>
+        </div>
+
+        <div class="stage generate">
+          <div class="number">3</div>
+          <h2>Prompt Generation</h2>
+          <p>Five parallel pipelines generate prompts from sceneInfo, cast enrichment, trivia, realism checks, and editorial facts.</p>
+          <div class="chips">
+            <span class="chip">sceneInfo</span>
+            <span class="chip">Cast</span>
+            <span class="chip">Trivia</span>
+            <span class="chip">Realism</span>
+            <span class="chip">Facts</span>
+          </div>
+        </div>
+
+        <div class="stage trust">
+          <div class="number">4</div>
+          <h2>Trust Layer</h2>
+          <p>Validate URLs, evidence, sources, MCQ quality, dedup, score, and re-fetch cited pages.</p>
+        </div>
+
+        <div class="stage output last">
+          <div class="number">5</div>
+          <h2>Client + Learning</h2>
+          <p>Emit UI bundle and audit files, then use engagement signals for model improvement.</p>
+        </div>
+      </div>
+
+      <div class="loop">Feedback loop: interactions improve prompt ranking, recommendations, user profiles, and ads/partner intelligence.</div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="2">
+    <div class="brand">Scene<span>IQ</span></div>
+    <div class="eyebrow">Pipeline source map</div>
+    <h1>What each pipeline actually uses</h1>
+    <p class="subtitle">This separates model generation from source verification, so the system is clear about what is AI-generated, what is searched, and what is deterministically checked.</p>
+
+    <div class="detail-grid">
+      <div class="panel">
+        <div class="pipeline-list">
+          <div class="row">
+            <h3 class="accent-green">sceneInfo</h3>
+            <p>Extracts music, cast/actors, locations, themes, cuepoints, scene context, and wiki context already present in the VLM payload.</p>
+            <div class="source-pill">VLM payload<br>0 API calls</div>
+          </div>
+          <div class="row">
+            <h3 class="accent-cyan">Cast enrichment</h3>
+            <p>Collects unique actors, uses Gemini with search grounding, and keeps facts with cited evidence.</p>
+            <div class="source-pill">Gemini + Google Search</div>
+          </div>
+          <div class="row">
+            <h3 class="accent-blue">Trivia</h3>
+            <p>Proposes scene topics, searches and fetches sources, then generates MCQs with retry checks.</p>
+            <div class="source-pill">Gemini + Search + Fetch</div>
+          </div>
+          <div class="row">
+            <h3 class="accent-amber">How Real Is It?</h3>
+            <p>Finds what is wrong, right, or invented using official, primary, or domain-authoritative sources.</p>
+            <div class="source-pill">Official/primary sources</div>
+          </div>
+          <div class="row">
+            <h3 class="accent-purple">Facts</h3>
+            <p>Builds title-level behind-the-scenes prompts and follow-ups from trusted editorial sources.</p>
+            <div class="source-pill">Gemini + trusted press</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="trust-stack">
+          <div class="trust-card">
+            <h3>Validation happens during generation</h3>
+            <p>Prompt candidates must pass URL provenance, source quality, verbatim evidence, cross-source, expert-name, and MCQ option checks before final scoring.</p>
+          </div>
+          <div class="trust-card">
+            <h3>Finalizer consolidates candidates</h3>
+            <p>Dedup across pipelines, score accuracy/legal/UX/monetization dimensions, then route to approve, reject, or needs-edit.</p>
+          </div>
+          <div class="trust-card">
+            <h3>Eval re-checks evidence</h3>
+            <p>Before output, cited URLs are re-fetched, title grounding is verified, and quotes are re-matched against live source text.</p>
+          </div>
+          <div class="trust-card">
+            <h3>Output becomes a learning surface</h3>
+            <p>UI prompts create interaction data that can improve recommendation ranking, prompt ranking, profile quality, and partner intelligence.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const slide = new URLSearchParams(location.search).get("slide") || "1";
+    document.querySelectorAll(".slide").forEach((el) => {
+      el.classList.toggle("active", el.dataset.slide === slide);
+    });
+  </script>
+</body>
+</html>

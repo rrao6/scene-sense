@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SceneIQ Clean Architecture</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #050816;
+    color: #f8fafc;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .slide {
+    width: 1920px;
+    height: 1080px;
+    position: relative;
+    overflow: hidden;
+    padding: 52px 70px 48px;
+    background:
+      radial-gradient(circle at 86% 8%, rgba(59, 130, 246, 0.26), transparent 34%),
+      radial-gradient(circle at 8% 98%, rgba(124, 58, 237, 0.22), transparent 36%),
+      linear-gradient(135deg, #030712 0%, #07111f 52%, #0b1020 100%);
+  }
+
+  .brand {
+    position: absolute;
+    top: 56px;
+    right: 74px;
+    font-size: 26px;
+    font-weight: 850;
+    letter-spacing: -0.02em;
+  }
+  .brand span { color: #22d3ee; }
+
+  .eyebrow {
+    color: #22d3ee;
+    font-size: 16px;
+    font-weight: 850;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    margin: 0;
+    max-width: 1260px;
+    font-size: 54px;
+    line-height: 1.04;
+    letter-spacing: -0.045em;
+    font-weight: 850;
+  }
+
+  .subtitle {
+    margin: 14px 0 0;
+    max-width: 1260px;
+    color: #a8b3c7;
+    font-size: 21px;
+    line-height: 1.32;
+  }
+
+  .frame {
+    margin-top: 28px;
+    height: 775px;
+    border-radius: 36px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(15, 23, 42, 0.54);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.32);
+    padding: 26px;
+    position: relative;
+  }
+
+  .top {
+    display: grid;
+    grid-template-columns: 280px 32px 335px 32px 500px 1fr;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .box {
+    border-radius: 22px;
+    border: 2px solid rgba(148, 163, 184, 0.35);
+    background: rgba(15, 23, 42, 0.72);
+    padding: 20px 22px;
+    min-height: 135px;
+  }
+
+  .arrow {
+    display: grid;
+    place-items: center;
+    color: #94a3b8;
+    font-size: 44px;
+    font-weight: 500;
+  }
+
+  .label {
+    margin: 0 0 8px;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 850;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+  }
+
+  .box h2,
+  .pipe h2,
+  .stage h2,
+  .legend h2 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    font-weight: 850;
+  }
+
+  .box p,
+  .pipe p,
+  .stage p,
+  .legend p {
+    margin: 9px 0 0;
+    color: #b7c4d8;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .legend {
+    border-radius: 22px;
+    border: 1px solid rgba(34, 211, 238, 0.28);
+    background: rgba(8, 47, 73, 0.44);
+    padding: 18px 20px;
+  }
+
+  .legend-grid {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+  }
+
+  .legend-item {
+    color: #cbd5e1;
+    font-size: 12.5px;
+    line-height: 1.25;
+  }
+  .legend-item strong { color: #fff; }
+
+  .pipelines {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 18px;
+  }
+
+  .pipe {
+    min-height: 192px;
+    border-radius: 24px;
+    padding: 22px 22px 20px;
+    border: 2px solid transparent;
+    box-shadow: 0 20px 55px rgba(0,0,0,0.24);
+  }
+
+  .pipe p {
+    font-weight: 600;
+  }
+
+  .source {
+    margin-top: 14px;
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(2, 6, 23, 0.28);
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 12px;
+    line-height: 1.15;
+    font-weight: 850;
+  }
+
+  .green { background: linear-gradient(135deg, #10b981, #059669); color: #021410; border-color: #34d399; }
+  .teal { background: linear-gradient(135deg, #14b8a6, #0f766e); color: #021410; border-color: #5eead4; }
+  .blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #eff6ff; border-color: #93c5fd; }
+  .amber { background: linear-gradient(135deg, #f59e0b, #d97706); color: #1c1201; border-color: #fcd34d; }
+  .purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: #f5f3ff; border-color: #c4b5fd; }
+  .green p, .teal p, .amber p { color: rgba(2, 6, 23, 0.77); }
+  .blue p, .purple p { color: rgba(239, 246, 255, 0.88); }
+
+  .bottom {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: 1.12fr 1fr 0.95fr 1.05fr;
+    gap: 18px;
+  }
+
+  .stage {
+    min-height: 145px;
+    border-radius: 24px;
+    padding: 21px 22px;
+    border: 2px solid rgba(148, 163, 184, 0.22);
+    background: rgba(2, 6, 23, 0.56);
+  }
+
+  .stage.red { border-color: rgba(252, 165, 165, 0.52); background: rgba(127, 29, 29, 0.42); }
+  .stage.gold { border-color: rgba(252, 211, 77, 0.58); background: rgba(113, 63, 18, 0.46); }
+  .stage.cyan { border-color: rgba(103, 232, 249, 0.58); background: rgba(22, 78, 99, 0.46); }
+  .stage.violet { border-color: rgba(196, 181, 253, 0.56); background: rgba(76, 29, 149, 0.46); }
+
+  .feedback {
+    margin-top: 20px;
+    border-radius: 22px;
+    padding: 17px 24px;
+    background: linear-gradient(90deg, rgba(34,211,238,0.15), rgba(167,139,250,0.14));
+    border: 1px solid rgba(34,211,238,0.24);
+    color: #dff9ff;
+    font-size: 18px;
+    line-height: 1.28;
+    font-weight: 760;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <main class="slide">
+    <div class="brand">Scene<span>IQ</span></div>
+    <div class="eyebrow">System architecture</div>
+    <h1>Verified scene prompts, generated from grounded sources</h1>
+    <p class="subtitle">A faithful view of how SceneIQ turns Tubi Moments VLM output into validated prompts, deterministic eval results, client output, and downstream learning signals.</p>
+
+    <section class="frame">
+      <div class="top">
+        <div class="box">
+          <p class="label">1. Input</p>
+          <h2>Tubi Moments VLM JSON</h2>
+          <p>Scenes, cast, dialogue, themes, objects, audio-recognized songs, and wiki-matched trivia.</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="box">
+          <p class="label">2. Ingest + domain detection</p>
+          <h2>Prepare eligible scenes</h2>
+          <p>Classify legal, historical, medical, military, hacking, rom-com, etc. Skip flagged or very short scenes.</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="box" style="border-color: rgba(56,189,248,.72); background: rgba(8,47,73,.58);">
+          <p class="label">3. Generate in parallel</p>
+          <h2>Five specialized pipelines</h2>
+          <p>Each pipeline uses a defined source/capability and emits prompt candidates with evidence.</p>
+        </div>
+        <div class="legend">
+          <h2>Source legend</h2>
+          <div class="legend-grid">
+            <div class="legend-item"><strong>VLM-only</strong>: no model/search call</div>
+            <div class="legend-item"><strong>Gemini</strong>: drafting/reasoning</div>
+            <div class="legend-item"><strong>Search grounding</strong>: Google-cited URLs</div>
+            <div class="legend-item"><strong>Fetch verifier</strong>: checks page text</div>
+            <div class="legend-item"><strong>Official/primary</strong>: law, academic, original text</div>
+            <div class="legend-item"><strong>Trusted press</strong>: major/trade editorial</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pipelines">
+        <div class="pipe green">
+          <h2>Tier-0</h2>
+          <p>Extracts wiki trivia, song IDs, and detected cast already present in VLM output.</p>
+          <div class="source">Uses: VLM-only deterministic extraction</div>
+        </div>
+        <div class="pipe teal">
+          <h2>Cast enrichment</h2>
+          <p>Collects unique actors, uses Gemini with search grounding, keeps only cited evidence.</p>
+          <div class="source">Uses: Gemini + Google Search grounding</div>
+        </div>
+        <div class="pipe blue">
+          <h2>Trivia</h2>
+          <p>Proposes scene topics, searches/fetches sources, generates MCQs, retries bad distractors.</p>
+          <div class="source">Uses: Gemini + Search + fetched pages</div>
+        </div>
+        <div class="pipe amber">
+          <h2>How Real Is It?</h2>
+          <p>Finds what is wrong, right, or invented using official/primary domain sources.</p>
+          <div class="source">Uses: official/primary sources + fallback search</div>
+        </div>
+        <div class="pipe purple">
+          <h2>Facts</h2>
+          <p>Builds editorial BTS prompts and follow-ups from trusted press and title-level topics.</p>
+          <div class="source">Uses: Gemini + trusted press sources</div>
+        </div>
+      </div>
+
+      <div class="bottom">
+        <div class="stage red">
+          <p class="label">4. Validators</p>
+          <h2>Hard gates at generation time</h2>
+          <p>Grounding URLs only, verbatim evidence match, cross-source corroboration, source blacklist, expert gate, MCQ option checks.</p>
+        </div>
+        <div class="stage gold">
+          <p class="label">5. Finalizer</p>
+          <h2>Dedup + scorecard</h2>
+          <p>Dedup across pipelines and score accuracy, legal safety, prompt quality, UX, and monetization fit.</p>
+        </div>
+        <div class="stage cyan">
+          <p class="label">6. Eval</p>
+          <h2>Live re-fetch</h2>
+          <p>Re-fetch cited URLs, verify title grounding, and re-match quotes before final output.</p>
+        </div>
+        <div class="stage violet">
+          <p class="label">7. Client output</p>
+          <h2>UI bundle + audit</h2>
+          <p>ui.json contract, final.json evidence, review.json scorecard, and human review sheet.</p>
+        </div>
+      </div>
+
+      <div class="feedback">Feedback loop: prompt opens, actor clicks, source expands, title jumps, dwell, skips, and watchlist adds feed ranking features, user profiles, recommendations, and ads/partner intelligence.</div>
+    </section>
+  </main>
+</body>
+</html>

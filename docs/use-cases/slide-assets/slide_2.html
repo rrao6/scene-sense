@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SceneIQ Slides</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  body { 
+    font-family: 'Inter', sans-serif; 
+    background-color: #020617; 
+    color: #f8fafc; 
+    margin: 0;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4rem;
+  }
+  .slide { 
+    width: 1600px; 
+    height: 900px; /* Fixed dimensions prevent cutoff */
+    background: radial-gradient(circle at top right, #1e293b, #020617);
+    border: 1px solid #1e293b;
+    border-radius: 1.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    position: relative;
+    padding: 2.5rem 3.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .glass-panel {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+  }
+  /* Decorative glows */
+  .glow-1 { position: absolute; top: -10%; left: -10%; width: 500px; height: 500px; background: #3b82f6; filter: blur(100px); opacity: 0.1; border-radius: 50%; z-index: 0; pointer-events: none; }
+  .glow-2 { position: absolute; bottom: -10%; right: -10%; width: 600px; height: 600px; background: #8b5cf6; filter: blur(120px); opacity: 0.1; border-radius: 50%; z-index: 0; pointer-events: none; }
+  
+  .content-z { position: relative; z-index: 10; flex-grow: 1; display: flex; flex-direction: column; }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 2: VALUE CHAIN -->
+<div class="slide" id="slide-2">
+  <div class="glow-1" style="background: #10b981;"></div>
+  <div class="glow-2" style="background: #0ea5e9;"></div>
+  
+  <div class="content-z">
+    <div class="mb-8 text-center mt-4">
+      <div class="text-emerald-400 font-bold tracking-widest uppercase text-xs mb-2">Post-Interaction Value</div>
+      <h1 class="text-5xl font-extrabold text-white tracking-tight mb-3">Curiosity Prompts Become Model Signals</h1>
+      <p class="text-xl text-slate-400 max-w-4xl mx-auto">Prompts are not just content—they are structured probes capturing what the user wants to watch next.</p>
+    </div>
+
+    <!-- Visual Flow Diagram -->
+    <div class="flex items-center justify-between gap-4 flex-grow mb-6">
+      
+      <div class="glass-panel rounded-2xl p-6 flex-1 flex flex-col items-center text-center relative border-t-4 border-t-slate-600 h-full">
+        <div class="w-14 h-14 bg-slate-800 rounded-full flex items-center justify-center mb-4 border border-slate-700">
+          <svg class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+        </div>
+        <h2 class="text-2xl font-bold text-white mb-2">1. Understand</h2>
+        <p class="text-[15px] text-slate-400 mb-6 flex-grow">Extract scene-level metadata: cast, dialogue, themes, objects, and places.</p>
+        <div class="w-full bg-slate-800 text-white font-semibold py-2.5 rounded-lg text-sm">Content Graph</div>
+        <!-- Arrow -->
+        <div class="absolute -right-4 top-1/2 -translate-y-1/2 z-20 text-slate-600">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </div>
+      </div>
+
+      <div class="glass-panel rounded-2xl p-6 flex-1 flex flex-col items-center text-center relative border-t-4 border-t-blue-500 h-full">
+        <div class="w-14 h-14 bg-blue-900/50 rounded-full flex items-center justify-center mb-4 border border-blue-800">
+          <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        </div>
+        <h2 class="text-2xl font-bold text-white mb-2">2. Activate</h2>
+        <p class="text-[15px] text-slate-400 mb-6 flex-grow">Generate actor facts, deep trivia, realism checks, and follow-up questions.</p>
+        <div class="w-full bg-blue-600 text-white font-semibold py-2.5 rounded-lg text-sm shadow-[0_0_15px_rgba(37,99,235,0.4)]">Curiosity Prompts</div>
+        <!-- Arrow -->
+        <div class="absolute -right-4 top-1/2 -translate-y-1/2 z-20 text-slate-600">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </div>
+      </div>
+
+      <div class="glass-panel rounded-2xl p-6 flex-1 flex flex-col items-center text-center relative border-t-4 border-t-cyan-400 h-full">
+        <div class="w-14 h-14 bg-cyan-900/50 rounded-full flex items-center justify-center mb-4 border border-cyan-800">
+          <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+        </div>
+        <h2 class="text-2xl font-bold text-white mb-2">3. Capture</h2>
+        <p class="text-[15px] text-slate-400 mb-6 flex-grow">Record explicit intent: clicks, expands, dwell time, and additions to watchlist.</p>
+        <div class="w-full bg-cyan-500 text-slate-900 font-bold py-2.5 rounded-lg text-sm shadow-[0_0_15px_rgba(6,182,212,0.4)]">Engagement Events</div>
+        <!-- Arrow -->
+        <div class="absolute -right-4 top-1/2 -translate-y-1/2 z-20 text-slate-600">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </div>
+      </div>
+
+      <div class="glass-panel rounded-2xl p-6 flex-1 flex flex-col items-center text-center border-t-4 border-t-purple-500 h-full">
+        <div class="w-14 h-14 bg-purple-900/50 rounded-full flex items-center justify-center mb-4 border border-purple-800">
+          <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        </div>
+        <h2 class="text-2xl font-bold text-white mb-2">4. Learn</h2>
+        <p class="text-[15px] text-slate-400 mb-6 flex-grow">Feed continuous signals back into entity ranking, user profiles, and ad segments.</p>
+        <div class="w-full bg-purple-600 text-white font-bold py-2.5 rounded-lg text-sm shadow-[0_0_15px_rgba(147,51,234,0.4)]">ML Signal</div>
+      </div>
+
+    </div>
+
+    <!-- Bottom summary row -->
+    <div class="grid grid-cols-3 gap-5 mt-auto">
+      <div class="bg-emerald-950/40 border border-emerald-500/30 rounded-xl p-5">
+        <h4 class="text-emerald-400 font-bold text-lg mb-1">Personalized Discovery</h4>
+        <p class="text-slate-300 text-[13px]">Recommend adjacent titles, actors, genres, and topics to increase watch time.</p>
+      </div>
+      <div class="bg-amber-950/40 border border-amber-500/30 rounded-xl p-5">
+        <h4 class="text-amber-400 font-bold text-lg mb-1">Richer User Identity</h4>
+        <p class="text-slate-300 text-[13px]">Build robust profiles from what users proactively choose to explore in-player.</p>
+      </div>
+      <div class="bg-fuchsia-950/40 border border-fuchsia-500/30 rounded-xl p-5">
+        <h4 class="text-fuchsia-400 font-bold text-lg mb-1">Ads + Partner Intel</h4>
+        <p class="text-slate-300 text-[13px]">Create high-intent audience segments from cast, brands, objects, and domains.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body></html>

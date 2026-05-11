@@ -12,12 +12,25 @@ venv/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
+build/
+dist/
+*.whl
 
-# Data (large / derived)
-data/outputs/
+# Coverage
+.coverage
+htmlcov/
+coverage.xml
+
+# Data (derived; demo bundle is packaged under src/scene_sense/demo/)
+data/outputs/*
+!data/outputs/.gitkeep
+!data/outputs/legally_blonde.demo.json
 data/eval/runs/
 *.parquet
 *.sqlite
+
+# Cache
+.cache/
 
 # OS / editor
 .DS_Store

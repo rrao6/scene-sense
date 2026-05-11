@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SceneIQ Architecture V10</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #050816;
+    color: #f8fafc;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .slide {
+    width: 1920px;
+    height: 1080px;
+    padding: 58px 72px 54px;
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 84% 8%, rgba(59, 130, 246, 0.28), transparent 34%),
+      radial-gradient(circle at 10% 96%, rgba(124, 58, 237, 0.20), transparent 34%),
+      linear-gradient(135deg, #030712 0%, #07111f 52%, #0b1020 100%);
+  }
+
+  .brand {
+    position: absolute;
+    top: 58px;
+    right: 72px;
+    font-size: 27px;
+    font-weight: 850;
+    letter-spacing: -0.02em;
+  }
+  .brand span { color: #22d3ee; }
+
+  .eyebrow {
+    margin: 0 0 12px;
+    color: #22d3ee;
+    font-size: 17px;
+    font-weight: 850;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 58px;
+    line-height: 1.02;
+    letter-spacing: -0.045em;
+    font-weight: 850;
+    max-width: 1320px;
+  }
+
+  .subtitle {
+    margin: 15px 0 0;
+    max-width: 1290px;
+    color: #a8b3c7;
+    font-size: 22px;
+    line-height: 1.32;
+    font-weight: 500;
+  }
+
+  .frame {
+    margin-top: 28px;
+    height: 760px;
+    border-radius: 34px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(15, 23, 42, 0.56);
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.30);
+    padding: 30px 34px 28px;
+    position: relative;
+  }
+
+  .top-flow {
+    display: grid;
+    grid-template-columns: 280px 34px 360px 34px 400px;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .arrow {
+    color: #8fa1bb;
+    font-size: 46px;
+    font-weight: 400;
+    text-align: center;
+  }
+
+  .node {
+    border-radius: 24px;
+    border: 2px solid rgba(148, 163, 184, 0.36);
+    background: rgba(15, 23, 42, 0.72);
+    padding: 22px 24px;
+    min-height: 138px;
+  }
+
+  .node h3, .card h3, .stage h3, .legend h3 {
+    margin: 0;
+    font-size: 23px;
+    line-height: 1.12;
+    font-weight: 850;
+    letter-spacing: -0.025em;
+  }
+
+  .node p, .card p, .stage p, .legend p {
+    margin: 10px 0 0;
+    color: #b8c4d7;
+    font-size: 15px;
+    line-height: 1.34;
+  }
+
+  .label {
+    margin: 0 0 9px;
+    color: #93a4bc;
+    font-size: 12px;
+    font-weight: 850;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .pipelines {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 18px;
+  }
+
+  .card {
+    min-height: 205px;
+    border-radius: 24px;
+    padding: 22px 22px 20px;
+    border: 2px solid transparent;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+  }
+
+  .card .source {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    margin-top: 16px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.22);
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 12px;
+    line-height: 1.15;
+    font-weight: 800;
+  }
+
+  .card.green { background: linear-gradient(135deg, #10b981, #059669); color: #031714; border-color: #34d399; }
+  .card.teal { background: linear-gradient(135deg, #14b8a6, #0f766e); color: #031714; border-color: #5eead4; }
+  .card.blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #eff6ff; border-color: #93c5fd; }
+  .card.amber { background: linear-gradient(135deg, #f59e0b, #d97706); color: #1c1201; border-color: #fcd34d; }
+  .card.purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: #f5f3ff; border-color: #c4b5fd; }
+  .card.green p, .card.teal p, .card.amber p { color: rgba(2, 6, 23, 0.78); font-weight: 650; }
+  .card.blue p, .card.purple p { color: rgba(239, 246, 255, 0.86); }
+
+  .stage-row {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr 0.85fr 1fr;
+    gap: 18px;
+  }
+
+  .stage {
+    min-height: 155px;
+    border-radius: 24px;
+    padding: 22px 24px;
+    border: 2px solid rgba(148, 163, 184, 0.22);
+    background: rgba(2, 6, 23, 0.58);
+  }
+  .stage.red { border-color: rgba(252, 165, 165, 0.55); background: rgba(127, 29, 29, 0.42); }
+  .stage.gold { border-color: rgba(252, 211, 77, 0.62); background: rgba(113, 63, 18, 0.46); }
+  .stage.cyan { border-color: rgba(103, 232, 249, 0.60); background: rgba(22, 78, 99, 0.46); }
+  .stage.violet { border-color: rgba(196, 181, 253, 0.58); background: rgba(76, 29, 149, 0.46); }
+
+  .legend {
+    position: absolute;
+    top: 30px;
+    right: 34px;
+    width: 500px;
+    min-height: 138px;
+    border-radius: 24px;
+    padding: 20px 24px;
+    border: 1px solid rgba(34, 211, 238, 0.28);
+    background: rgba(8, 47, 73, 0.42);
+  }
+
+  .legend-grid {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+  }
+
+  .legend-item {
+    color: #c7d2e5;
+    font-size: 13px;
+    line-height: 1.25;
+  }
+
+  .legend-item strong {
+    color: #f8fafc;
+  }
+
+  .feedback {
+    margin-top: 22px;
+    border-radius: 22px;
+    padding: 17px 22px;
+    text-align: center;
+    color: #dff9ff;
+    font-size: 18px;
+    line-height: 1.28;
+    font-weight: 760;
+    background: linear-gradient(90deg, rgba(34,211,238,0.16), rgba(167,139,250,0.14));
+    border: 1px solid rgba(34,211,238,0.24);
+  }
+</style>
+</head>
+<body>
+  <main class="slide">
+    <div class="brand">Scene<span>IQ</span></div>
+    <p class="eyebrow">Source-grounded system architecture</p>
+    <h1>SceneIQ: verified contextual prompts plus a feedback loop for ML and ads</h1>
+    <p class="subtitle">A faithful architecture view: what each generation pipeline uses, how claims are validated, where deterministic eval runs, and how post-click interaction becomes downstream signal.</p>
+
+    <section class="frame">
+      <div class="top-flow">
+        <div class="node">
+          <p class="label">1. Input</p>
+          <h3>Tubi Moments VLM JSON</h3>
+          <p>Scenes, cast, dialogue, themes, objects, songs, wiki-matched trivia.</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node">
+          <p class="label">2. Ingest + domain detection</p>
+          <h3>Prepare eligible scenes</h3>
+          <p>Classify legal, historical, medical, military, hacking, rom-com, etc. Skip flagged or very short scenes.</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node" style="border-color: rgba(56,189,248,.7); background: rgba(8,47,73,.55);">
+          <p class="label">3. Generate in parallel</p>
+          <h3>Five specialized pipelines</h3>
+          <p>Each pipeline has a defined source/capability and returns prompt candidates with evidence.</p>
+        </div>
+      </div>
+
+      <div class="legend">
+        <h3>Source/capability legend</h3>
+        <div class="legend-grid">
+          <div class="legend-item"><strong>VLM-only:</strong> no model/search call</div>
+          <div class="legend-item"><strong>Gemini:</strong> drafting/reasoning</div>
+          <div class="legend-item"><strong>Search grounding:</strong> Google-cited URLs</div>
+          <div class="legend-item"><strong>Fetch:</strong> verify fetched page text</div>
+          <div class="legend-item"><strong>Primary/official:</strong> law, academic, original texts</div>
+          <div class="legend-item"><strong>Trusted press:</strong> trade/major editorial sources</div>
+        </div>
+      </div>
+
+      <div class="pipelines">
+        <div class="card green">
+          <h3>Tier-0</h3>
+          <p>Extract wiki trivia, recognized songs, and detected cast already present in the VLM payload.</p>
+          <div class="source">Source: VLM-only deterministic extraction</div>
+        </div>
+        <div class="card teal">
+          <h3>Cast enrichment</h3>
+          <p>Collect unique actors, ask Gemini for grounded actor facts, keep only cited evidence.</p>
+          <div class="source">Source: Gemini + Google Search grounding</div>
+        </div>
+        <div class="card blue">
+          <h3>Trivia</h3>
+          <p>Propose scene topics, search/fetch sources, generate MCQs, retry on distractor overlap.</p>
+          <div class="source">Source: Gemini + Search + fetched pages</div>
+        </div>
+        <div class="card amber">
+          <h3>How Real Is It?</h3>
+          <p>Find what the scene gets wrong/right/invented using primary or official domain sources.</p>
+          <div class="source">Source: curated primary/official library + fallback search</div>
+        </div>
+        <div class="card purple">
+          <h3>Facts</h3>
+          <p>Cluster title-level BTS topics and build editorial prompts with follow-up chains.</p>
+          <div class="source">Source: Gemini + trusted press sources</div>
+        </div>
+      </div>
+
+      <div class="stage-row">
+        <div class="stage red">
+          <p class="label">4. Validators</p>
+          <h3>Hard gates at generation time</h3>
+          <p>Grounding URL provenance, verbatim anchor match, cross-source corroboration, expert gate, source blacklist, MCQ option-kind checks.</p>
+        </div>
+        <div class="stage gold">
+          <p class="label">5. Finalizer</p>
+          <h3>Dedup + 7-dim scorecard</h3>
+          <p>Dedup by scene/primitive/keyword hash. Score accuracy, legal safety, prompt quality, UX, and monetization fit.</p>
+        </div>
+        <div class="stage cyan">
+          <p class="label">6. Deterministic eval</p>
+          <h3>Live re-fetch + quote match</h3>
+          <p>Re-fetch cited URLs, verify title grounding, re-match evidence, override generator self-claims.</p>
+        </div>
+        <div class="stage violet">
+          <p class="label">7. Client output</p>
+          <h3>UI bundle + audit files</h3>
+          <p>ui.json contract, final.json audit, review.json scorecard, and human review prompt sheet.</p>
+        </div>
+      </div>
+
+      <div class="feedback">Post-click feedback loop: actor clicks, prompt opens, source expands, title jumps, dwell, skips, and watchlist adds feed ranking features, richer user profiles, recommendations, and ads/partner intelligence.</div>
+    </section>
+  </main>
+</body>
+</html>
